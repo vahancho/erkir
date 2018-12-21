@@ -28,7 +28,20 @@ public:
       Point p2{ 48.857, 2.351 };
       auto d = p1.sphericalDistanceTo(p2); // 404.3 km
   */
-  double sphericalDistanceTo(const Point &point, double radius = 6371.0);
+  double sphericalDistanceTo(const Point &point, double radius = 6371.0) const;
+
+  /*!
+    Returns the(initial) bearing from ‘this’ point to destination point.
+
+    \param point Latitude / longitude of destination point.
+    \returns Initial bearing in degrees from north.
+
+    @example
+      Point p1{ 52.205, 0.119 };
+      Point p2{ 48.857, 2.351 };
+      auto b1 = p1.sphericalBearingTo(p2); // 156.2°
+  */
+  double sphericalBearingTo(const Point &point) const;
 
 private:
   Latitude m_latitude;

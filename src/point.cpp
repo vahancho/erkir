@@ -21,7 +21,7 @@ const Longitude &Point::longitude() const
   return m_longitude;
 }
 
-double Point::sphericalDistanceTo(const Point &point, double radius)
+double Point::sphericalDistanceTo(const Point &point, double radius) const
 {
   // see mathforum.org/library/drmath/view/51879.html for derivation
 
@@ -38,6 +38,21 @@ double Point::sphericalDistanceTo(const Point &point, double radius)
   auto c = 2.0 * std::atan2(std::sqrt(a), std::sqrt(1.0 - a));
 
   return radius * c;
+}
+
+double Point::sphericalBearingTo(const Point &point) const
+{
+  // see mathforum.org/library/drmath/view/55417.html for derivation
+
+  auto phi1 = m_latitude.radians();
+  auto phi2 = point.latitude().radians();
+  auto deltaLambda = point.longitude().radians() - longitude().radians();
+  auto y = std::sin(deltaLambda) * std::cos(phi2);
+  auto x = std::cos(phi1) * std::sin(phi2) -
+           std::sin(phi1) * std::cos(phi2) * std::cos(deltaLambda);
+  auto theta = std::atan2(y, x);
+
+  return Coordinate::toDegrees(theta);
 }
 
 }

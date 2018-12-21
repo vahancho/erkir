@@ -12,6 +12,9 @@ public:
   double degrees() const;
   double radians() const;
 
+  /// Converts radians to degrees.
+  static double toDegrees(double radians);
+
 private:
   double m_degrees;
 };

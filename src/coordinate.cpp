@@ -25,6 +25,11 @@ double Coordinate::radians() const
   return m_degrees * radiansInDegree;
 }
 
+double Coordinate::toDegrees(double radians)
+{
+  return radians / radiansInDegree;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 Latitude::Latitude(double degree)
