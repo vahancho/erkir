@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 
 #include <math.h>
+#include <stdexcept>
 
 #include "coordinate.h"
 
@@ -22,6 +23,30 @@ double Coordinate::degree() const
 double Coordinate::radian() const
 {
   return m_degree * radiansInDegree;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+Latitude::Latitude(double degree)
+  :
+    Coordinate(degree)
+{
+  if (degree > 90.0 || degree < -90.0)
+  {
+    throw std::out_of_range("Latitude measurements range from 0° to (+/–)90°.");
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+Longitude::Longitude(double degree)
+  :
+    Coordinate(degree)
+{
+  if (degree > 180.0 || degree < -180.0)
+  {
+    throw std::out_of_range("Longitude measurements range from 0° to (+/–)180°.");
+  }
 }
 
 }
