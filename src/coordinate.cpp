@@ -10,19 +10,19 @@ constexpr double radiansInDegree = M_PI / 180.0;
 namespace geodesy
 {
 
-Coordinate::Coordinate(double degree)
+Coordinate::Coordinate(double degrees)
   :
-    m_degree(degree)
+    m_degrees(degrees)
 {}
 
-double Coordinate::degree() const
+double Coordinate::degrees() const
 {
-  return m_degree;
+  return m_degrees;
 }
 
-double Coordinate::radian() const
+double Coordinate::radians() const
 {
-  return m_degree * radiansInDegree;
+  return m_degrees * radiansInDegree;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

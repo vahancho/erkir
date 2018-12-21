@@ -7,13 +7,13 @@ namespace geodesy
 class Coordinate
 {
 public:
-  Coordinate(double degree);
+  Coordinate(double degrees);
 
-  double degree() const;
-  double radian() const;
+  double degrees() const;
+  double radians() const;
 
 private:
-  double m_degree;
+  double m_degrees;
 };
 
 class Latitude : public Coordinate
