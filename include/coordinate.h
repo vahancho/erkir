@@ -47,6 +47,8 @@ public:
   /// A helper function to convert degrees to radians.
   static double toRadians(double degrees);
 
+  static double pi();
+
 private:
   double m_degrees;
 };

@@ -59,6 +59,11 @@ double Coordinate::toRadians(double degrees)
   return degrees * radiansInDegree;
 }
 
+double Coordinate::pi()
+{
+  return M_PI;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 Latitude::Latitude(double degree)
