@@ -53,12 +53,15 @@ public:
   /*!
     This function uses calculations on the basis of a spherical earth
     (ignoring ellipsoidal effects) – which is accurate enough for most purposes.
+    It uses the 'haversine' formula to calculate the great-circle distance between
+    two points – that is, the shortest distance over the earth's surface – giving
+    an 'as-the-crow-flies' distance between the points.
 
-    \param point Latitude / longitude of destination point.
+    \param point Latitude/longitude of destination point.
     \param radius (Mean)radius of earth(defaults to radius in 6371e3 metres).
     \returns Distance between this point and destination point, in same units as radius.
 
-    @example
+    \example
       Point p1{ 52.205, 0.119 };
       Point p2{ 48.857, 2.351 };
       auto d = p1.sphericalDistanceTo(p2); // 404.3 km
@@ -68,10 +71,10 @@ public:
   /*!
     Returns the(initial) bearing from 'this' point to destination point.
 
-    \param point Latitude / longitude of destination point.
+    \param point Latitude/longitude of destination point.
     \returns Initial bearing in degrees from north.
 
-    @example
+    \example
       Point p1{ 52.205, 0.119 };
       Point p2{ 48.857, 2.351 };
       auto b1 = p1.sphericalBearingTo(p2); // 156.2°
@@ -126,7 +129,7 @@ public:
     \param   distance Distance travelled, in same units as earth radius (default: metres).
     \param   bearing Initial bearing in degrees from north.
     \param   radius (Mean) radius of earth (defaults to radius in 6371e3 metres).
-    \returns {LatLon} Destination point.
+    \returns Destination point.
 
     \example
       Point p1{51.4778, -0.0015};
