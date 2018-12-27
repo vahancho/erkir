@@ -184,5 +184,55 @@ Point Point::sphericalDestinationPoint(double distance, double bearing, double r
                fmod(Coordinate::toDegrees(lambda2) + 540.0, 360.0) - 180.0); // normalise to -180..+180°
 }
 
+Point Point::sphericalIntersection(const Point &p1, double brng1,
+                                   const Point &p2, double brng2)
+{
+  // see www.edwilliams.org/avform.htm#Intersection
+
+  auto phi1 = p1.latitude().radians();
+  auto lambda1 = p1.longitude().radians();
+  auto phi2 = p2.latitude().radians();
+  auto lambda2 = p2.longitude().radians();
+  auto theta13 = Coordinate::toRadians(brng1);
+  auto theta23 = Coordinate::toRadians(brng2);
+  auto deltaPhi = phi2 - phi1;
+  auto deltaLambda = lambda2 - lambda1;
+
+  // angular distance p1-p2
+  auto sigma12 = 2.0 * std::asin(std::sqrt(std::sin(deltaPhi / 2.0) * std::sin(deltaPhi / 2.0) +
+                                 std::cos(phi1) * std::cos(phi2) * std::sin(deltaLambda / 2.0) * std::sin(deltaLambda / 2.0)));
+  if (sigma12 == 0) {
+    return Point();
+  }
+
+  // initial/final bearings between points
+  auto costhetaa = (std::sin(phi2) - std::sin(phi1)*std::cos(sigma12)) / (std::sin(sigma12) * std::cos(phi1));
+  auto costhetab = (std::sin(phi1) - std::sin(phi2)*std::cos(sigma12)) / (std::sin(sigma12) * std::cos(phi2));
+  auto thetaA = std::acos(std::min(std::max(costhetaa, -1.0), 1.0)); // protect against rounding errors
+  auto thetaB = std::acos(std::min(std::max(costhetab, -1.0), 1.0)); // protect against rounding errors
+
+  auto theta12 = std::sin(lambda2 - lambda1) > 0.0 ? thetaA : 2.0 * Coordinate::pi() - thetaA;
+  auto theta21 = std::sin(lambda2 - lambda1) > 0.0 ? 2.0 * Coordinate::pi() - thetaB : thetaB;
+
+  auto alpha1 = theta13 - theta12; // angle 2-1-3
+  auto alpha2 = theta21 - theta23; // angle 1-2-3
+
+  if (std::sin(alpha1) == 0.0 && std::sin(alpha2) == 0.0) {
+    return Point(); // Infinite intersections
+  }
+  if (std::sin(alpha1) * std::sin(alpha2) < 0.0) {
+    return Point(); // Ambiguous intersection
+  }
+
+  auto alpha3 = std::acos(-std::cos(alpha1) * std::cos(alpha2) + std::sin(alpha1) * std::sin(alpha2) * std::cos(sigma12));
+  auto sigma13 = std::atan2(std::sin(sigma12) * std::sin(alpha1) * std::sin(alpha2), std::cos(alpha2) + std::cos(alpha1) * std::cos(alpha3));
+  auto phi3 = std::asin(std::sin(phi1) * std::cos(sigma13) + std::cos(phi1) * std::sin(sigma13) * std::cos(theta13));
+  auto deltaLambda13 = std::atan2(std::sin(theta13) * std::sin(sigma13) * std::cos(phi1), std::cos(sigma13) - std::sin(phi1) * std::sin(phi3));
+  auto lambda3 = lambda1 + deltaLambda13;
+
+  return Point(Coordinate::toDegrees(phi3),
+               fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180); // normalise to -180..+180°
+}
+
 }
 

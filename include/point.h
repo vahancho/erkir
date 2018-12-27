@@ -134,6 +134,25 @@ public:
   */
   Point sphericalDestinationPoint(double distance, double bearing, double radius = 6371e3) const;
 
+  /*!
+    Returns the point of intersection of two paths defined by point and bearing.
+
+    @param   p1 First point.
+    @param   brng1 Initial bearing from first point in degrees.
+    @param   p2 Second point.
+    @param   brng2 Initial bearing from second point in degrees.
+    @returns Destination point (an invalid point if no unique intersection defined).
+
+    @example
+      Point p1{51.8853, 0.2545}
+      auto brng1 = 108.547;
+      Point p2{49.0034, 2.5735}
+      auto brng2 = 32.435;
+      auto pInt = sphericalIntersection(p1, brng1, p2, brng2); // 50.9078°N, 004.5084°E
+  */
+  static Point sphericalIntersection(const Point &p1, double brng1,
+                                     const Point &p2, double brng2);
+
 private:
   Latitude m_latitude;
   Longitude m_longitude;

@@ -22,6 +22,7 @@
 *  SOFTWARE.                                                                      *
 ***********************************************************************************/
 
+#include <cassert>
 #include "point.h"
 
 using namespace geodesy;
@@ -40,6 +41,9 @@ int main()
 
   Point p3{ 51.4778, -0.0015 };
   auto dest = p3.sphericalDestinationPoint(7794.0, 300.7); // 51.5135°N, 000.0983°W
+  auto intersect = Point::sphericalIntersection({ 51.8853, 0.2545 }, 108.547,
+                                                { 49.0034, 2.5735 }, 32.435);
+  assert(intersect.isValid());
 
   return 0;
 }
