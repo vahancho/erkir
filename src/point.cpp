@@ -143,5 +143,32 @@ Point Point::sphericalIntermediatePointTo(const Point &point, double fraction) c
                fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180.0); // normalise lon to -180..+180°
 }
 
+Point Point::sphericalDestinationPoint(double distance, double bearing, double radius) const
+{
+  // see mathforum.org/library/drmath/view/52049.html for derivation
+
+  auto sigma = distance / radius; // angular distance in radians
+  auto theta = Coordinate::toRadians(bearing);
+
+  auto phi1 = m_latitude.radians();
+  auto lambda1 = m_longitude.radians();
+
+  auto sinPhi1 = std::sin(phi1);
+  auto cosPhi1 = std::cos(phi1);
+  auto sinSigma = std::sin(sigma);
+  auto cosSigma = std::cos(sigma);
+  auto sinTheta = std::sin(theta);
+  auto cosTheta = std::cos(theta);
+
+  auto sinPhi2 = sinPhi1 * cosSigma + cosPhi1 * sinSigma * cosTheta;
+  auto phi2 = std::asin(sinPhi2);
+  auto y = sinTheta * sinSigma * cosPhi1;
+  auto x = cosSigma - sinPhi1 * sinPhi2;
+  auto lambda2 = lambda1 + std::atan2(y, x);
+
+  return Point(Coordinate::toDegrees(phi2),
+               fmod(Coordinate::toDegrees(lambda2) + 540.0, 360.0) - 180.0); // normalise to -180..+180°
+}
+
 }
 

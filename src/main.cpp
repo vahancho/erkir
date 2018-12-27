@@ -38,5 +38,8 @@ int main()
   auto pMid1 = p1.sphericalMidpointTo(p2);   // 50.5363°N, 001.2746°E
   auto pMid2 = p1.sphericalIntermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
 
+  Point p3{ 51.4778, -0.0015 };
+  auto dest = p3.sphericalDestinationPoint(7794.0, 300.7); // 51.5135°N, 000.0983°W
+
   return 0;
 }

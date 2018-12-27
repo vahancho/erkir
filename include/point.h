@@ -49,7 +49,7 @@ public:
     (ignoring ellipsoidal effects) – which is accurate enough for most purposes.
 
     \param point Latitude / longitude of destination point.
-    \param radius (Mean)radius of earth(defaults to radius in 6371.0 metres).
+    \param radius (Mean)radius of earth(defaults to radius in 6371e3 metres).
     \returns Distance between this point and destination point, in same units as radius.
 
     @example
@@ -57,7 +57,7 @@ public:
       Point p2{ 48.857, 2.351 };
       auto d = p1.sphericalDistanceTo(p2); // 404.3 km
   */
-  double sphericalDistanceTo(const Point &point, double radius = 6371.0) const;
+  double sphericalDistanceTo(const Point &point, double radius = 6371e3) const;
 
   /*!
     Returns the(initial) bearing from 'this' point to destination point.
@@ -112,6 +112,21 @@ public:
     auto pMid = p1.sphericalIntermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
   */
   Point sphericalIntermediatePointTo(const Point &point, double fraction) const;
+
+  /*!
+    Returns the destination point from ‘this’ point having travelled the given distance on the
+    given initial bearing (bearing normally varies around path followed).
+
+    \param   distance Distance travelled, in same units as earth radius (default: metres).
+    \param   bearing Initial bearing in degrees from north.
+    \param   radius (Mean) radius of earth (defaults to radius in 6371e3 metres).
+    \returns {LatLon} Destination point.
+
+    \example
+      Point p1{51.4778, -0.0015};
+      Point p2 = p1.sphericalDestinationPoint(7794, 300.7); // 51.5135°N, 000.0983°W
+  */
+  Point sphericalDestinationPoint(double distance, double bearing, double radius = 6371e3) const;
 
 private:
   Latitude m_latitude;
