@@ -1,1 +1,1 @@
-# erkir
+# Erkir simple geodesy C++ library
