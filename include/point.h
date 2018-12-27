@@ -30,12 +30,17 @@
 namespace geodesy
 {
 
+//! Implements the geographical point.
 class Point
 {
 public:
+  //! Constructs a point with the given \p latitude and \p longitude.
   Point(const Latitude &latitude, const Longitude &longitude);
 
+  //! Returns the latitude of this point.
   const Latitude &latitude() const;
+
+  //! Returns the longitude of this point.
   const Longitude &longitude() const;
 
   /// Returns the distance from this point to destination point(using haversine formula).

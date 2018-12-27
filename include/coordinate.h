@@ -28,15 +28,20 @@
 namespace geodesy
 {
 
+//! Implements the geographical coordinate abstraction.
 class Coordinate
 {
 public:
+  //! Constructs a coordinate by the given decimal degrees.
   Coordinate(double degrees);
 
+  //! Returns this coordinate's value in decimal degrees.
   double degrees() const;
+
+  //! Returns this coordinate's value in radians.
   double radians() const;
 
-  /// Converts radians to degrees.
+  /// A helper function to convert radians to degrees.
   static double toDegrees(double radians);
 
 private:
