@@ -45,5 +45,9 @@ int main()
                                                 { 49.0034, 2.5735 }, 32.435);
   assert(intersect.isValid());
 
+  Point pCurrent{ 53.2611, -0.7972 };
+  auto dist = pCurrent.sphericalCrossTrackDistanceTo({ 53.3206, -1.7297 },
+                                                     { 53.1887,  0.1334 });  // -307.5 m
+
   return 0;
 }

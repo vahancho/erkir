@@ -234,5 +234,17 @@ Point Point::sphericalIntersection(const Point &p1, double brng1,
                fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180); // normalise to -180..+180°
 }
 
+double Point::sphericalCrossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
+                                            double radius) const
+{
+  auto d13 = pathStart.sphericalDistanceTo(*this, radius) / radius;
+  auto theta13 = Coordinate::toRadians(pathStart.sphericalBearingTo(*this));
+  auto theta12 = Coordinate::toRadians(pathStart.sphericalBearingTo(pathEnd));
+
+  auto xt = std::asin(std::sin(d13) * std::sin(theta13 - theta12));
+
+  return xt * radius;
+};
+
 }
 

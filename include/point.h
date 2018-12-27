@@ -156,6 +156,24 @@ public:
   static Point sphericalIntersection(const Point &p1, double brng1,
                                      const Point &p2, double brng2);
 
+  /*!
+    Returns (signed) distance from 'this' point to great circle defined by
+    start-point and end-point.
+
+    \param   pathStart - Start point of great circle path.
+    \param   pathEnd - End point of great circle path.
+    \param   (Mean) radius of earth (defaults to radius in 6371e3 metres).
+    \returns Distance to great circle (negative if to left, positive if to right of path).
+
+    \example
+      Point pCurrent{53.2611, -0.7972};
+      Point p1{53.3206, -1.7297};
+      Point p2{53.1887,  0.1334};
+      auto d = pCurrent.sphericalCrossTrackDistanceTo(p1, p2);  // -307.5 m
+  */
+  double sphericalCrossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
+                                       double radius = 6371e3) const;
+
 private:
   Latitude m_latitude;
   Longitude m_longitude;
