@@ -25,7 +25,7 @@
 #ifndef COORDINATE_H
 #define COORDINATE_H
 
-namespace geodesy
+namespace erkir
 {
 
 //! Implements the geographical coordinate abstraction.

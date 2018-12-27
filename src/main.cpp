@@ -25,7 +25,7 @@
 #include <cassert>
 #include "point.h"
 
-using namespace geodesy;
+using namespace erkir;
 
 int main()
 {

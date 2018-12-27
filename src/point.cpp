@@ -27,7 +27,7 @@
 
 #include "point.h"
 
-namespace geodesy
+namespace erkir
 {
 
 Point::Point()

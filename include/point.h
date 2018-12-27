@@ -27,7 +27,7 @@
 
 #include "coordinate.h"
 
-namespace geodesy
+namespace erkir
 {
 
 //! Implements the geographical point.

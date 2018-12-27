@@ -31,7 +31,7 @@
 
 constexpr double radiansInDegree = M_PI / 180.0;
 
-namespace geodesy
+namespace erkir
 {
 
 Coordinate::Coordinate(double degrees)
