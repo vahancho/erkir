@@ -70,6 +70,20 @@ public:
   */
   Point sphericalMidpointTo(const Point &point) const;
 
+  /*!
+    Returns the point at given fraction between 'this' point and specified point.
+
+   \param   point Latitude/longitude of destination point.
+   \param   fraction Fraction between the two points (0 = this point, 1.0 = specified point).
+   \returns Intermediate point between this point and destination point.
+
+   \example
+    Point p1{52.205, 0.119};
+    Point p2{48.857, 2.351};
+    auto pMid = p1.sphericalIntermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
+  */
+  Point sphericalIntermediatePointTo(const Point &point, double fraction) const;
+
 private:
   Latitude m_latitude;
   Longitude m_longitude;
