@@ -174,6 +174,25 @@ public:
   double sphericalCrossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
                                        double radius = 6371e3) const;
 
+  /*!
+    Returns how far 'this' point is along a path from start-point, heading towards end-point.
+    That is, if a perpendicular is drawn from 'this' point to the (great circle) path, the along-track
+    distance is the distance from the start point to where the perpendicular crosses the path.
+
+    \param   pathStart - Start point of great circle path.
+    \param   pathEnd - End point of great circle path.
+    \param   (Mean) radius of earth (defaults to radius in 6371e3 metres).
+    \returns Distance along great circle to point nearest 'this' point.
+
+    \example
+      Point pCurrent{53.2611, -0.7972};
+      Point p1{53.3206, -1.7297};
+      Point p2{53.1887,  0.1334};
+      auto d = pCurrent.sphericalAlongTrackDistanceTo(p1, p2);  // 62.331 km
+  */
+  double sphericalAlongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
+                                       double radius = 6371e3) const;
+
 private:
   Latitude m_latitude;
   Longitude m_longitude;

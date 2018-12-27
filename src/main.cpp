@@ -47,7 +47,12 @@ int main()
 
   Point pCurrent{ 53.2611, -0.7972 };
   auto dist = pCurrent.sphericalCrossTrackDistanceTo({ 53.3206, -1.7297 },
-                                                     { 53.1887,  0.1334 });  // -307.5 m
+                                                     { 53.1887,  0.1334 }); // -307.5 m
+  dist = pCurrent.sphericalAlongTrackDistanceTo({ 53.3206, -1.7297 },
+                                                { 53.1887,  0.1334 }); // 62.331 km
+
+  dist = pCurrent.sphericalAlongTrackDistanceTo({ 53.2611, -0.7972 },
+                                                { 53.1887,  0.1334 }); // 0.0 km
 
   return 0;
 }

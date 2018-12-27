@@ -244,7 +244,28 @@ double Point::sphericalCrossTrackDistanceTo(const Point &pathStart, const Point 
   auto xt = std::asin(std::sin(d13) * std::sin(theta13 - theta12));
 
   return xt * radius;
-};
+}
+
+double Point::sphericalAlongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
+                                            double radius) const
+{
+  auto d13 = pathStart.sphericalDistanceTo(*this, radius) / radius;
+  auto theta13 = Coordinate::toRadians(pathStart.sphericalBearingTo(*this));
+  auto theta12 = Coordinate::toRadians(pathStart.sphericalBearingTo(pathEnd));
+
+  auto xt = std::asin(std::sin(d13) * std::sin(theta13 - theta12));
+
+  auto at = std::acos(std::cos(d13) / std::abs(std::cos(xt)));
+
+  auto cosTheta = std::cos(theta12 - theta13);
+  if (cosTheta == 0.0)
+  {
+    return 0.0;
+  }
+
+  auto dist = at * radius;
+  return cosTheta > 0 ? dist : -dist;
+}
 
 }
 
