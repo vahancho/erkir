@@ -57,9 +57,31 @@ double Point::sphericalBearingTo(const Point &point) const
 
 double Point::sphericalFinalBearingTo(const Point &point) const
 {
-  // get initial bearing from destination point to this point & reverse it by adding 180°
+  // Get initial bearing from destination point to this point & reverse it by adding 180°
   return fmod(point.sphericalBearingTo(*this) + 180.0, 360.0);
-};
+}
+
+Point Point::sphericalMidpointTo(const Point &point) const
+{
+  // see mathforum.org/library/drmath/view/51822.html for derivation
+
+  auto phi1 = m_latitude.radians();
+  auto lambda1 = m_longitude.radians();
+  auto phi2 = point.latitude().radians();
+  auto deltaLambda = point.longitude().radians() - m_longitude.radians();
+
+  auto Bx = std::cos(phi2) * std::cos(deltaLambda);
+  auto By = std::cos(phi2) * std::sin(deltaLambda);
+
+  auto x = std::sqrt((std::cos(phi1) + Bx) * (std::cos(phi1) + Bx) + By * By);
+  auto y = std::sin(phi1) + std::sin(phi2);
+  auto phi3 = std::atan2(y, x);
+
+  auto lambda3 = lambda1 + std::atan2(By, std::cos(phi1) + Bx);
+
+  return Point(Coordinate::toDegrees(phi3),
+               fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180.0); // normalise to ?180..+180°
+}
 
 }
 

@@ -57,6 +57,19 @@ public:
   */
   double sphericalFinalBearingTo(const Point &point) const;
 
+  /*!
+    Returns the midpoint between 'this' point and the supplied point.
+
+    \param   point - Latitude/longitude of destination point.
+    \returns Midpoint between this point and the supplied point.
+
+    \example
+      Point p1{52.205, 0.119};
+      Point p2{48.857, 2.351};
+      auto pMid = p1.sphericalMidpointTo(p2); // 50.5363°N, 001.2746°E
+  */
+  Point sphericalMidpointTo(const Point &point) const;
+
 private:
   Latitude m_latitude;
   Longitude m_longitude;
