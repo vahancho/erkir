@@ -34,6 +34,9 @@ namespace geodesy
 class Point
 {
 public:
+  //! Constructs an invalid point object.
+  Point();
+
   //! Constructs a point with the given \p latitude and \p longitude.
   Point(const Latitude &latitude, const Longitude &longitude);
 
@@ -42,6 +45,9 @@ public:
 
   //! Returns the longitude of this point.
   const Longitude &longitude() const;
+
+  //! Returns true if this point is a valid one and false otherwise.
+  bool isValid() const;
 
   /// Returns the distance from this point to destination point(using haversine formula).
   /*!
@@ -131,6 +137,7 @@ public:
 private:
   Latitude m_latitude;
   Longitude m_longitude;
+  bool m_isValid;
 };
 
 }

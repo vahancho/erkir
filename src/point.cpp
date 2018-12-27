@@ -23,17 +23,26 @@
 ***********************************************************************************/
 
 #include <cmath>
+#include <algorithm>
+
 #include "point.h"
 
 namespace geodesy
 {
 
+Point::Point()
+  :
+    m_latitude(0.0),
+    m_longitude(0.0),
+    m_isValid(true)
+{}
+
 Point::Point(const Latitude &latitude, const Longitude &longitude)
   :
     m_latitude(latitude),
-    m_longitude(longitude)
-{
-}
+    m_longitude(longitude),
+    m_isValid(true)
+{}
 
 const Latitude &Point::latitude() const
 {
@@ -43,6 +52,11 @@ const Latitude &Point::latitude() const
 const Longitude &Point::longitude() const
 {
   return m_longitude;
+}
+
+bool Point::isValid() const
+{
+  return m_isValid;
 }
 
 double Point::sphericalDistanceTo(const Point &point, double radius) const
