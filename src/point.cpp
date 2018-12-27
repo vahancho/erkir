@@ -52,7 +52,7 @@ double Point::sphericalBearingTo(const Point &point) const
            std::sin(phi1) * std::cos(phi2) * std::cos(deltaLambda);
   auto theta = std::atan2(y, x);
 
-  return Coordinate::toDegrees(theta);
+  return fmod(Coordinate::toDegrees(theta) + 360.0, 360.0);
 }
 
 }
