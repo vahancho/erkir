@@ -193,6 +193,19 @@ public:
   double sphericalAlongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
                                        double radius = 6371e3) const;
 
+  /*!
+    Returns maximum latitude reached when travelling on a great circle on given bearing from this
+    point ('Clairaut's formula'). Negate the result for the minimum latitude (in the Southern
+    hemisphere).
+
+    The maximum latitude is independent of longitude; it will be the same for all points on a given
+    latitude.
+
+    \param bearing Initial bearing.
+    \param latitude Starting latitude.
+  */
+  double sphericalMaxLatitude(double bearing) const;
+
 private:
   Latitude m_latitude;
   Longitude m_longitude;

@@ -267,5 +267,14 @@ double Point::sphericalAlongTrackDistanceTo(const Point &pathStart, const Point 
   return cosTheta > 0 ? dist : -dist;
 }
 
+double Point::sphericalMaxLatitude(double bearing) const
+{
+  auto theta = Coordinate::toRadians(bearing);
+  auto phi = m_latitude.radians();
+  auto phiMax = std::acos(std::abs(std::sin(theta) * std::cos(phi)));
+
+  return Coordinate::toDegrees(phiMax);
+}
+
 }
 
