@@ -55,5 +55,11 @@ double Point::sphericalBearingTo(const Point &point) const
   return fmod(Coordinate::toDegrees(theta) + 360.0, 360.0);
 }
 
+double Point::sphericalFinalBearingTo(const Point &point) const
+{
+  // get initial bearing from destination point to this point & reverse it by adding 180°
+  return fmod(point.sphericalBearingTo(*this) + 180.0, 360.0);
+};
+
 }
 

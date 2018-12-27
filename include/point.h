@@ -31,7 +31,7 @@ public:
   double sphericalDistanceTo(const Point &point, double radius = 6371.0) const;
 
   /*!
-    Returns the(initial) bearing from ‘this’ point to destination point.
+    Returns the(initial) bearing from 'this' point to destination point.
 
     \param point Latitude / longitude of destination point.
     \returns Initial bearing in degrees from north.
@@ -43,6 +43,20 @@ public:
   */
   double sphericalBearingTo(const Point &point) const;
 
+  /*!
+    Returns final bearing arriving at destination destination point from 'this' point; the final bearing
+    will differ from the initial bearing by varying degrees according to distance and latitude.
+
+    \param   point - Latitude/longitude of destination point.
+    \returns Final bearing in degrees from north.
+
+    \example
+      Point p1{52.205, 0.119};
+      Point p2{48.857, 2.351};
+      auto b2 = p1.sphericalFinalBearingTo(p2); // 157.9°
+  */
+  double sphericalFinalBearingTo(const Point &point) const;
+
 private:
   Latitude m_latitude;
   Longitude m_longitude;
@@ -51,3 +65,4 @@ private:
 }
 
 #endif // POINT_H
+

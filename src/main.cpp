@@ -9,7 +9,8 @@ int main()
   Point p2{ 48.857, 2.351 };
   auto d = p1.sphericalDistanceTo(p2); // 404.3 km
 
-  auto b1 = p1.sphericalBearingTo(p2); // 156.2°
+  auto b1 = p1.sphericalBearingTo(p2);      // 156.2°
+  auto b2 = p1.sphericalFinalBearingTo(p2); // 157.9°
 
   return 0;
 }
