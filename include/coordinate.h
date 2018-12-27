@@ -44,6 +44,9 @@ public:
   /// A helper function to convert radians to degrees.
   static double toDegrees(double radians);
 
+  /// A helper function to convert degrees to radians.
+  static double toRadians(double degrees);
+
 private:
   double m_degrees;
 };

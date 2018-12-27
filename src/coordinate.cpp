@@ -46,12 +46,17 @@ double Coordinate::degrees() const
 
 double Coordinate::radians() const
 {
-  return m_degrees * radiansInDegree;
+  return toRadians(m_degrees);
 }
 
 double Coordinate::toDegrees(double radians)
 {
   return radians / radiansInDegree;
+}
+
+double Coordinate::toRadians(double degrees)
+{
+  return degrees * radiansInDegree;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
