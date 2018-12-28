@@ -92,8 +92,8 @@ static std::vector<Point> randomPoints(int count)
   return points;
 }
 
-static void reportTime(std::chrono::steady_clock::time_point start,
-                       std::chrono::steady_clock::time_point end,
+static void reportTime(std::chrono::time_point<std::chrono::high_resolution_clock> start,
+                       std::chrono::time_point<std::chrono::high_resolution_clock> end,
                        int count, const char *title)
 {
   auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
