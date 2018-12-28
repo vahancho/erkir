@@ -276,5 +276,104 @@ double Point::maxLatitude(double bearing) const
   return Coordinate::toDegrees(phiMax);
 }
 
+double Point::rhumbDistanceTo(const Point &point, double radius) const
+{
+  // see www.edwilliams.org/avform.htm#Rhumb
+
+  auto phi1 = m_latitude.radians();
+  auto phi2 = point.latitude().radians();
+  auto deltaPhi = phi2 - phi1;
+  auto deltaLambda = std::abs(point.longitude().radians() - m_longitude.radians());
+
+  // If dLon over 180° take shorter rhumb line across the anti-meridian:
+  if (deltaLambda > Coordinate::pi()) {
+    deltaLambda -= 2.0 * Coordinate::pi();
+  }
+
+  // On Mercator projection, longitude distances shrink by latitude; q is the 'stretch factor'
+  // q becomes ill-conditioned along E-W line (0/0); use empirical tolerance to avoid it
+  auto deltaPsi = std::log(std::tan(phi2 / 2.0 + Coordinate::pi() / 4.0) /
+                           std::tan(phi1 / 2.0 + Coordinate::pi() / 4.0));
+  auto q = std::abs(deltaPsi) > 10e-12 ? deltaPhi / deltaPsi : std::cos(phi1);
+
+  // Distance is Pythagoras on 'stretched' Mercator projection
+  auto sigma = std::sqrt(deltaPhi * deltaPhi + q * q * deltaLambda * deltaLambda); // angular distance in radians
+  return sigma * radius;
+}
+
+double Point::rhumbBearingTo(const Point &point) const
+{
+  auto phi1 = m_latitude.radians();
+  auto phi2 = point.latitude().radians();
+  auto deltaLambda = point.longitude().radians() - m_longitude.radians();
+  // If dLon over 180° take shorter rhumb line across the anti-meridian:
+  if (deltaLambda > Coordinate::pi()) {
+    deltaLambda -= 2 * Coordinate::pi();
+  }
+  if (deltaLambda < -Coordinate::pi()) {
+    deltaLambda += 2 * Coordinate::pi();
+  }
+
+  auto deltaPsi = std::log(std::tan(phi2 / 2.0 + Coordinate::pi() / 4.0) /
+                           std::tan(phi1 / 2.0 + Coordinate::pi() / 4.0));
+
+  auto theta = std::atan2(deltaLambda, deltaPsi);
+
+  return fmod(Coordinate::toDegrees(theta) + 360.0, 360.0);
+}
+
+Point Point::rhumbDestinationPoint(double distance, double bearing, double radius) const
+{
+  auto sigma = distance / radius; // angular distance in radians
+  auto phi1 = m_latitude.radians();
+  auto lambda1 = m_longitude.radians();
+  auto theta = Coordinate::toRadians(bearing);
+
+  auto deltaPhi = sigma * std::cos(theta);
+  auto phi2 = phi1 + deltaPhi;
+
+  // check for some daft bugger going past the pole, normalise latitude if so
+  if (std::abs(phi2) > Coordinate::pi() / 2.0) {
+    phi2 = phi2 > 0 ? Coordinate::pi() - phi2 : -Coordinate::pi() - phi2;
+  }
+
+  auto deltaPsi = std::log(std::tan(phi2 / 2.0 + Coordinate::pi() / 4.0) /
+                           std::tan(phi1 / 2.0 + Coordinate::pi() / 4.0));
+  // E-W course becomes ill-conditioned with 0/0
+  auto q = std::abs(deltaPsi) > 10e-12 ? deltaPhi / deltaPsi : std::cos(phi1);
+
+  auto deltaLambda = sigma * std::sin(theta) / q;
+  auto lambda2 = lambda1 + deltaLambda;
+
+  return Point(Coordinate::toDegrees(phi2),
+               fmod(Coordinate::toDegrees(lambda2) + 540.0, 360.0) - 180.0); // normalise to -180..+180°
+}
+
+Point Point::rhumbMidpointTo(const Point &point) const
+{
+  // see mathforum.org/kb/message.jspa?messageID=148837
+
+  auto phi1 = m_latitude.radians();
+  auto lambda1 = m_longitude.radians();
+  auto phi2 = point.latitude().radians();
+  auto lambda2 = point.longitude().radians();
+
+  if (std::abs(lambda2 - lambda1) > Coordinate::pi()) lambda1 += 2 * Coordinate::pi(); // crossing anti-meridian
+
+  auto phi3 = (phi1 + phi2) / 2;
+  auto f1 = std::tan(Coordinate::pi() / 4.0 + phi1 / 2.0);
+  auto f2 = std::tan(Coordinate::pi() / 4.0 + phi2 / 2.0);
+  auto f3 = std::tan(Coordinate::pi() / 4.0 + phi3 / 2.0);
+  auto lambda3 = ((lambda2 - lambda1) * std::log(f3) + lambda1 * std::log(f2) -
+                  lambda2 * std::log(f1)) / std::log(f2 / f1);
+
+  if (!std::isfinite(lambda3)) {
+    lambda3 = (lambda1 + lambda2) / 2.0; // parallel of latitude
+  }
+
+  return Point(Coordinate::toDegrees(phi3),
+               fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180.0); // normalise to -180..+180°
+};
+
 }
 

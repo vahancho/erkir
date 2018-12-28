@@ -87,7 +87,7 @@ public:
   /// Returns final bearing arriving at destination point from 'this' point.
   /*!
     Returns final bearing arriving at destination point from 'this' point; the final bearing
-    will differ from the initial bearing by varying degrees according to distance and latitude.
+    will differ from the initial bearing by autoying degrees according to distance and latitude.
 
     \param   point - Latitude/longitude of destination point.
     \returns Final bearing in degrees from north.
@@ -127,7 +127,7 @@ public:
   /// Returns the destination point from 'this' point.
   /*!
     Returns the destination point from 'this' point having travelled the given distance on the
-    given initial bearing (bearing normally varies around path followed).
+    given initial bearing (bearing normally autoies around path followed).
 
     \param   distance Distance travelled, in same units as earth radius (default: metres).
     \param   bearing Initial bearing in degrees from north.
@@ -160,9 +160,9 @@ public:
 
   /// Returns (signed) distance from 'this' point to great circle defined by start - point and end - point.
   /*!
-    \param   pathStart - Start point of great circle path.
-    \param   pathEnd - End point of great circle path.
-    \param   (Mean) radius of earth (defaults to radius in 6371e3 metres).
+    \param   pathStart Start point of great circle path.
+    \param   pathEnd End point of great circle path.
+    \param   radius (Mean) radius of earth (defaults to radius in 6371e3 metres).
     \returns Distance to great circle (negative if to left, positive if to right of path).
 
     \example
@@ -180,9 +180,9 @@ public:
     That is, if a perpendicular is drawn from 'this' point to the (great circle) path, the along-track
     distance is the distance from the start point to where the perpendicular crosses the path.
 
-    \param   pathStart - Start point of great circle path.
-    \param   pathEnd - End point of great circle path.
-    \param   (Mean) radius of earth (defaults to radius in 6371e3 metres).
+    \param   pathStart Start point of great circle path.
+    \param   pathEnd End point of great circle path.
+    \param   radius (Mean) radius of earth (defaults to radius in 6371e3 metres).
     \returns Distance along great circle to point nearest 'this' point.
 
     \example
@@ -207,6 +207,63 @@ public:
     \param latitude Starting latitude.
   */
   double maxLatitude(double bearing) const;
+
+  /// Returns the distance travelling from 'this' point to destination point along a rhumb line.
+  /*!
+    A 'rhumb line' (or loxodrome) is a path of constant bearing, which crosses
+    all meridians at the same angle. Sailors used to (and sometimes still) navigate
+    along rhumb lines since it is easier to follow a constant compass bearing than
+    to be continually adjusting the bearing, as is needed to follow a great circle.
+    Rhumb lines are straight lines on a Mercator Projec­tion map (also helpful for
+    naviga­tion). Rhumb lines are generally longer than great-circle (orthodrome) routes.
+
+    \param   point Latitude/longitude of destination point.
+    \param   radius (Mean) radius of earth (defaults to radius in 6371e3 metres).
+    \returns Distance between this point and destination point (same units as radius).
+
+    \example
+      Point p1{51.127, 1.338};
+      Point p2{50.964, 1.853};
+      auto d = p1.rhumbDistanceTo(p2); // 40.31 km
+  */
+  double rhumbDistanceTo(const Point &point, double radius = 6371e3) const;
+
+  /// Returns the bearing from 'this' point to destination point along a rhumb line.
+  /*!
+    \param   point Latitude/longitude of destination point.
+    \returns Bearing in degrees from north.
+
+    \example
+      Point p1{51.127, 1.338};
+      Point p2{50.964, 1.853};
+      auto d = p1.rhumbBearingTo(p2); // 116.7
+  */
+  double rhumbBearingTo(const Point &point) const;
+
+  /// Returns the destination point having travelled along a rhumb line from 'this' point the given distance on the given bearing.
+  /*!
+    \param   distance Distance travelled, in same units as earth radius (default: metres).
+    \param   bearing Bearing in degrees from north.
+    \param   radius (Mean)radius of earth(defaults to radius in 6371e3 metres).
+    \returns Destination point.
+
+    \example
+      Point p1{51.127, 1.338};
+      auto p2 = p1.rhumbDestinationPoint(40300, 116.7); // 50.9642°N, 001.8530°E
+  */
+  Point rhumbDestinationPoint(double distance, double bearing, double radius = 6371e3) const;
+
+  /// Returns the loxodromic midpoint (along a rhumb line) between 'this' point and second point.
+  /*!
+    \param   {LatLon} point - Latitude/longitude of second point.
+    \returns {LatLon} Midpoint between this point and second point.
+
+    \example
+      Point p1{51.127, 1.338};
+      Point p2{50.964, 1.853};
+      auto pMid = p1.rhumbMidpointTo(p2); // 51.0455°N, 001.5957°E
+  */
+  Point rhumbMidpointTo(const Point &point) const;
 
 private:
   Latitude m_latitude;
