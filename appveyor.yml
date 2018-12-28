@@ -25,7 +25,7 @@ configuration:
     - Release
 
 build_script:
-    - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Auxiliary\Build\vcvars64.bat"
+    - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
     - cd C:\projects\erkir\test
     - cl /I..\src /I..\include /W4 /EHsc test.cpp /link /out:test.exe
 
