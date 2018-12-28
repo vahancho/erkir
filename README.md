@@ -5,3 +5,5 @@
 ## See Also
 
 * [Movable Type Scripts Latitude/Longitude Calculations Reference](http://www.movable-type.co.uk/scripts/latlong.html)
+
+<meta name="google-site-verification" content="DMWJsN76bXgQtV1Pk5A44lDWHBA0hURo0Wkx8WLhSN8" />
