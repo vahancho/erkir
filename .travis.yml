@@ -1,0 +1,12 @@
+dist: trusty
+sudo: require
+language: cpp
+compiler:
+  - gcc
+before_install:
+  - pip install --user cpp-coveralls
+script:
+    - g++ -std=c++11 -coverage test/test.cpp -o test_app
+    - ./test_app
+after_success:
+  - coveralls --verbose
