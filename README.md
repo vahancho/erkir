@@ -55,6 +55,17 @@ cl /I..\src /I..\include /W4 /EHsc test.cpp /link /out:test.exe
 test
 ```
 
+### Performance Tests
+
+I measured performance for some spherical geodesy functions (`Point` class). I used similar approach as Chris Veness did in his tests, i.e. called functions for 5000 random points or pairs of points. And here are my results:
+
+| Function             | Avg. time/calculation (nanoseconds)|
+| -------------------- |:----------------------------------:|
+| Distance (haversine) | 162                                |
+| Initial bearing      | 190                                |
+| Destination point    | 227                                |
+
+*ofcourse timeings are machine dependent*
 
 ## See Also
 
