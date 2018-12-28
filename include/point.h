@@ -281,6 +281,9 @@ public:
   /// Returns true if two points are equal and false otherwise.
   bool operator==(const Point &other) const;
 
+  /// Returns true if two points are different and false otherwise.
+  bool operator!=(const Point &other) const;
+
 private:
   Latitude m_latitude;
   Longitude m_longitude;

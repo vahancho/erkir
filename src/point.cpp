@@ -437,9 +437,14 @@ double Point::areaOf(const std::vector<Point> &polygon, double radius)
 
 bool Point::operator==(const Point &other) const
 {
-  static const double epsilon = 0.00001;
+  static const double epsilon = 0.0001;
   return std::abs(latitude().degrees() - other.latitude().degrees()) < epsilon &&
          std::abs(longitude().degrees() - other.longitude().degrees()) < epsilon;
+}
+
+bool Point::operator!=(const Point &other) const
+{
+  return !(*this == other);
 }
 
 }
