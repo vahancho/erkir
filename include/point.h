@@ -72,9 +72,8 @@ public:
   */
   double distanceTo(const Point &point, double radius = 6371e3) const;
 
+  /// Returns the(initial) bearing from 'this' point to destination point.
   /*!
-    Returns the(initial) bearing from 'this' point to destination point.
-
     \param point Latitude/longitude of destination point.
     \returns Initial bearing in degrees from north.
 
@@ -85,8 +84,9 @@ public:
   */
   double bearingTo(const Point &point) const;
 
+  /// Returns final bearing arriving at destination point from 'this' point.
   /*!
-    Returns final bearing arriving at destination destination point from 'this' point; the final bearing
+    Returns final bearing arriving at destination point from 'this' point; the final bearing
     will differ from the initial bearing by varying degrees according to distance and latitude.
 
     \param   point - Latitude/longitude of destination point.
@@ -99,9 +99,8 @@ public:
   */
   double finalBearingTo(const Point &point) const;
 
+  /// Returns the midpoint between 'this' point and the supplied point.
   /*!
-    Returns the midpoint between 'this' point and the supplied point.
-
     \param   point - Latitude/longitude of destination point.
     \returns Midpoint between this point and the supplied point.
 
@@ -112,9 +111,8 @@ public:
   */
   Point midpointTo(const Point &point) const;
 
+  /// Returns the point at given fraction between 'this' point and specified point.
   /*!
-    Returns the point at given fraction between 'this' point and specified point.
-
    \param   point Latitude/longitude of destination point.
    \param   fraction Fraction between the two points (0 = this point, 1.0 = specified point).
    \returns Intermediate point between this point and destination point.
@@ -126,8 +124,9 @@ public:
   */
   Point intermediatePointTo(const Point &point, double fraction) const;
 
+  /// Returns the destination point from 'this' point.
   /*!
-    Returns the destination point from ‘this’ point having travelled the given distance on the
+    Returns the destination point from 'this' point having travelled the given distance on the
     given initial bearing (bearing normally varies around path followed).
 
     \param   distance Distance travelled, in same units as earth radius (default: metres).
@@ -141,9 +140,8 @@ public:
   */
   Point destinationPoint(double distance, double bearing, double radius = 6371e3) const;
 
+  /// Returns the point of intersection of two paths defined by point and bearing.
   /*!
-    Returns the point of intersection of two paths defined by point and bearing.
-
     @param   p1 First point.
     @param   brng1 Initial bearing from first point in degrees.
     @param   p2 Second point.
@@ -160,10 +158,8 @@ public:
   static Point intersection(const Point &p1, double brng1,
                                      const Point &p2, double brng2);
 
+  /// Returns (signed) distance from 'this' point to great circle defined by start - point and end - point.
   /*!
-    Returns (signed) distance from 'this' point to great circle defined by
-    start-point and end-point.
-
     \param   pathStart - Start point of great circle path.
     \param   pathEnd - End point of great circle path.
     \param   (Mean) radius of earth (defaults to radius in 6371e3 metres).
@@ -178,6 +174,7 @@ public:
   double crossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
                                        double radius = 6371e3) const;
 
+  /// Returns how far 'this' point is along a path from start-point.
   /*!
     Returns how far 'this' point is along a path from start-point, heading towards end-point.
     That is, if a perpendicular is drawn from 'this' point to the (great circle) path, the along-track
@@ -197,6 +194,7 @@ public:
   double alongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
                                        double radius = 6371e3) const;
 
+  /// Returns maximum latitude reached when travelling on a great circle.
   /*!
     Returns maximum latitude reached when travelling on a great circle on given bearing from this
     point ('Clairaut's formula'). Negate the result for the minimum latitude (in the Southern
