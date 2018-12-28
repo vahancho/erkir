@@ -25,6 +25,7 @@
 #ifndef POINT_H
 #define POINT_H
 
+#include <vector>
 #include "coordinate.h"
 
 namespace erkir
@@ -255,8 +256,8 @@ public:
 
   /// Returns the loxodromic midpoint (along a rhumb line) between 'this' point and second point.
   /*!
-    \param   {LatLon} point - Latitude/longitude of second point.
-    \returns {LatLon} Midpoint between this point and second point.
+    \param   point Latitude/longitude of second point.
+    \returns Midpoint between this point and second point.
 
     \example
       Point p1{51.127, 1.338};
@@ -264,6 +265,21 @@ public:
       auto pMid = p1.rhumbMidpointTo(p2); // 51.0455°N, 001.5957°E
   */
   Point rhumbMidpointTo(const Point &point) const;
+
+  /// Calculates the area of a spherical polygon where the sides of the polygon are great circle arcs joining the vertices.
+  /*!
+    \param   polygon Array of points defining vertices of the polygon
+    \param   radius (Mean)radius of earth(defaults to radius in 6371e3 metres).
+    \returns The area of the polygon, in the same units as radius.
+
+    \example
+      std::vector<Point> polygon = {{0,0}, {1,0}, {0,1}};
+      auto area = Point::areaOf(polygon); // 6.18e9 m²
+  */
+  static double areaOf(const std::vector<Point> &polygon, double radius = 6371e3);
+
+  /// Returns true if two points are equal and false otherwise.
+  bool operator==(const Point &other) const;
 
 private:
   Latitude m_latitude;
