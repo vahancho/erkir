@@ -59,7 +59,7 @@ bool Point::isValid() const
   return m_isValid;
 }
 
-double Point::sphericalDistanceTo(const Point &point, double radius) const
+double Point::distanceTo(const Point &point, double radius) const
 {
   // see mathforum.org/library/drmath/view/51879.html for derivation
 
@@ -78,7 +78,7 @@ double Point::sphericalDistanceTo(const Point &point, double radius) const
   return radius * c;
 }
 
-double Point::sphericalBearingTo(const Point &point) const
+double Point::bearingTo(const Point &point) const
 {
   // see mathforum.org/library/drmath/view/55417.html for derivation
 
@@ -93,13 +93,13 @@ double Point::sphericalBearingTo(const Point &point) const
   return fmod(Coordinate::toDegrees(theta) + 360.0, 360.0);
 }
 
-double Point::sphericalFinalBearingTo(const Point &point) const
+double Point::finalBearingTo(const Point &point) const
 {
   // Get initial bearing from destination point to this point & reverse it by adding 180°
-  return fmod(point.sphericalBearingTo(*this) + 180.0, 360.0);
+  return fmod(point.bearingTo(*this) + 180.0, 360.0);
 }
 
-Point Point::sphericalMidpointTo(const Point &point) const
+Point Point::midpointTo(const Point &point) const
 {
   // see mathforum.org/library/drmath/view/51822.html for derivation
 
@@ -121,7 +121,7 @@ Point Point::sphericalMidpointTo(const Point &point) const
                fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180.0); // normalise to -180..+180°
 }
 
-Point Point::sphericalIntermediatePointTo(const Point &point, double fraction) const
+Point Point::intermediatePointTo(const Point &point, double fraction) const
 {
   auto phi1 = m_latitude.radians();
   auto lambda1 = m_longitude.radians();
@@ -157,7 +157,7 @@ Point Point::sphericalIntermediatePointTo(const Point &point, double fraction) c
                fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180.0); // normalise lon to -180..+180°
 }
 
-Point Point::sphericalDestinationPoint(double distance, double bearing, double radius) const
+Point Point::destinationPoint(double distance, double bearing, double radius) const
 {
   // see mathforum.org/library/drmath/view/52049.html for derivation
 
@@ -184,7 +184,7 @@ Point Point::sphericalDestinationPoint(double distance, double bearing, double r
                fmod(Coordinate::toDegrees(lambda2) + 540.0, 360.0) - 180.0); // normalise to -180..+180°
 }
 
-Point Point::sphericalIntersection(const Point &p1, double brng1,
+Point Point::intersection(const Point &p1, double brng1,
                                    const Point &p2, double brng2)
 {
   // see www.edwilliams.org/avform.htm#Intersection
@@ -234,24 +234,24 @@ Point Point::sphericalIntersection(const Point &p1, double brng1,
                fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180); // normalise to -180..+180°
 }
 
-double Point::sphericalCrossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
+double Point::crossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
                                             double radius) const
 {
-  auto d13 = pathStart.sphericalDistanceTo(*this, radius) / radius;
-  auto theta13 = Coordinate::toRadians(pathStart.sphericalBearingTo(*this));
-  auto theta12 = Coordinate::toRadians(pathStart.sphericalBearingTo(pathEnd));
+  auto d13 = pathStart.distanceTo(*this, radius) / radius;
+  auto theta13 = Coordinate::toRadians(pathStart.bearingTo(*this));
+  auto theta12 = Coordinate::toRadians(pathStart.bearingTo(pathEnd));
 
   auto xt = std::asin(std::sin(d13) * std::sin(theta13 - theta12));
 
   return xt * radius;
 }
 
-double Point::sphericalAlongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
+double Point::alongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
                                             double radius) const
 {
-  auto d13 = pathStart.sphericalDistanceTo(*this, radius) / radius;
-  auto theta13 = Coordinate::toRadians(pathStart.sphericalBearingTo(*this));
-  auto theta12 = Coordinate::toRadians(pathStart.sphericalBearingTo(pathEnd));
+  auto d13 = pathStart.distanceTo(*this, radius) / radius;
+  auto theta13 = Coordinate::toRadians(pathStart.bearingTo(*this));
+  auto theta12 = Coordinate::toRadians(pathStart.bearingTo(pathEnd));
 
   auto xt = std::asin(std::sin(d13) * std::sin(theta13 - theta12));
 
@@ -267,7 +267,7 @@ double Point::sphericalAlongTrackDistanceTo(const Point &pathStart, const Point 
   return cosTheta > 0 ? dist : -dist;
 }
 
-double Point::sphericalMaxLatitude(double bearing) const
+double Point::maxLatitude(double bearing) const
 {
   auto theta = Coordinate::toRadians(bearing);
   auto phi = m_latitude.radians();

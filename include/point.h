@@ -31,6 +31,10 @@ namespace erkir
 {
 
 //! Implements the geographical point.
+/*!
+  All formulae in this class are for calculations on the basis of a spherical earth
+  (ignoring ellipsoidal effects).
+*/
 class Point
 {
 public:
@@ -64,9 +68,9 @@ public:
     \example
       Point p1{ 52.205, 0.119 };
       Point p2{ 48.857, 2.351 };
-      auto d = p1.sphericalDistanceTo(p2); // 404.3 km
+      auto d = p1.distanceTo(p2); // 404.3 km
   */
-  double sphericalDistanceTo(const Point &point, double radius = 6371e3) const;
+  double distanceTo(const Point &point, double radius = 6371e3) const;
 
   /*!
     Returns the(initial) bearing from 'this' point to destination point.
@@ -77,9 +81,9 @@ public:
     \example
       Point p1{ 52.205, 0.119 };
       Point p2{ 48.857, 2.351 };
-      auto b1 = p1.sphericalBearingTo(p2); // 156.2°
+      auto b1 = p1.bearingTo(p2); // 156.2°
   */
-  double sphericalBearingTo(const Point &point) const;
+  double bearingTo(const Point &point) const;
 
   /*!
     Returns final bearing arriving at destination destination point from 'this' point; the final bearing
@@ -91,9 +95,9 @@ public:
     \example
       Point p1{52.205, 0.119};
       Point p2{48.857, 2.351};
-      auto b2 = p1.sphericalFinalBearingTo(p2); // 157.9°
+      auto b2 = p1.finalBearingTo(p2); // 157.9°
   */
-  double sphericalFinalBearingTo(const Point &point) const;
+  double finalBearingTo(const Point &point) const;
 
   /*!
     Returns the midpoint between 'this' point and the supplied point.
@@ -104,9 +108,9 @@ public:
     \example
       Point p1{52.205, 0.119};
       Point p2{48.857, 2.351};
-      auto pMid = p1.sphericalMidpointTo(p2); // 50.5363°N, 001.2746°E
+      auto pMid = p1.midpointTo(p2); // 50.5363°N, 001.2746°E
   */
-  Point sphericalMidpointTo(const Point &point) const;
+  Point midpointTo(const Point &point) const;
 
   /*!
     Returns the point at given fraction between 'this' point and specified point.
@@ -118,9 +122,9 @@ public:
    \example
     Point p1{52.205, 0.119};
     Point p2{48.857, 2.351};
-    auto pMid = p1.sphericalIntermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
+    auto pMid = p1.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
   */
-  Point sphericalIntermediatePointTo(const Point &point, double fraction) const;
+  Point intermediatePointTo(const Point &point, double fraction) const;
 
   /*!
     Returns the destination point from ‘this’ point having travelled the given distance on the
@@ -133,9 +137,9 @@ public:
 
     \example
       Point p1{51.4778, -0.0015};
-      Point p2 = p1.sphericalDestinationPoint(7794, 300.7); // 51.5135°N, 000.0983°W
+      Point p2 = p1.destinationPoint(7794, 300.7); // 51.5135°N, 000.0983°W
   */
-  Point sphericalDestinationPoint(double distance, double bearing, double radius = 6371e3) const;
+  Point destinationPoint(double distance, double bearing, double radius = 6371e3) const;
 
   /*!
     Returns the point of intersection of two paths defined by point and bearing.
@@ -151,9 +155,9 @@ public:
       auto brng1 = 108.547;
       Point p2{49.0034, 2.5735}
       auto brng2 = 32.435;
-      auto pInt = sphericalIntersection(p1, brng1, p2, brng2); // 50.9078°N, 004.5084°E
+      auto pInt = intersection(p1, brng1, p2, brng2); // 50.9078°N, 004.5084°E
   */
-  static Point sphericalIntersection(const Point &p1, double brng1,
+  static Point intersection(const Point &p1, double brng1,
                                      const Point &p2, double brng2);
 
   /*!
@@ -169,9 +173,9 @@ public:
       Point pCurrent{53.2611, -0.7972};
       Point p1{53.3206, -1.7297};
       Point p2{53.1887,  0.1334};
-      auto d = pCurrent.sphericalCrossTrackDistanceTo(p1, p2);  // -307.5 m
+      auto d = pCurrent.crossTrackDistanceTo(p1, p2);  // -307.5 m
   */
-  double sphericalCrossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
+  double crossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
                                        double radius = 6371e3) const;
 
   /*!
@@ -188,9 +192,9 @@ public:
       Point pCurrent{53.2611, -0.7972};
       Point p1{53.3206, -1.7297};
       Point p2{53.1887,  0.1334};
-      auto d = pCurrent.sphericalAlongTrackDistanceTo(p1, p2);  // 62.331 km
+      auto d = pCurrent.alongTrackDistanceTo(p1, p2);  // 62.331 km
   */
-  double sphericalAlongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
+  double alongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
                                        double radius = 6371e3) const;
 
   /*!
@@ -204,7 +208,7 @@ public:
     \param bearing Initial bearing.
     \param latitude Starting latitude.
   */
-  double sphericalMaxLatitude(double bearing) const;
+  double maxLatitude(double bearing) const;
 
 private:
   Latitude m_latitude;
