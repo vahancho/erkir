@@ -22,6 +22,9 @@
 *  SOFTWARE.                                                                      *
 ***********************************************************************************/
 
+#include <random>
+#include <chrono>
+
 #include "point.h"
 #include "point.cpp"
 #include "coordinate.cpp"
@@ -71,6 +74,30 @@ static bool verifyPoint(const Point &point, const Point &expectedPoint, const ch
   }
   ++s_passed;
   return true;
+}
+
+static std::vector<Point> randomPoints(int count)
+{
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<double> latitudeDistr{ -90.0, 90.0 };
+  std::uniform_real_distribution<double> longitudeDistr{ -180.0, 180.0 };
+
+  std::vector<Point> points;
+  for (int i = 0; i < count; ++i)
+  {
+    points.emplace_back(latitudeDistr(gen), longitudeDistr(gen));
+  }
+
+  return points;
+}
+
+static void reportTime(std::chrono::time_point<std::chrono::steady_clock> start,
+                       std::chrono::time_point<std::chrono::steady_clock> end,
+                       int count, const char *title)
+{
+  auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+  printf("%s: %lld nanoseconds per calculation\n", title, duration / count);
 }
 
 int main()
@@ -154,6 +181,42 @@ int main()
   }
 
   printf("Total tests: %d, passed: %d, failed: %d\n", s_passed + s_failed, s_passed, s_failed);
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  // Some performance tests.
+  printf("\nSome performance tests:\n\n");
+
+  const int count = 5000;
+  auto points1 = randomPoints(count);
+  auto points2 = randomPoints(count);
+
+  // Distance (haversine).
+  auto start = std::chrono::high_resolution_clock::now();
+  for (int i = 0; i < count; ++i)
+  {
+    points1[i].distanceTo(points2[i]);
+  }
+  auto end = std::chrono::high_resolution_clock::now();
+  reportTime(start, end, count, "Distance");
+
+  // Initial bearing.
+  start = std::chrono::high_resolution_clock::now();
+  for (int i = 0; i < count; ++i)
+  {
+    points1[i].bearingTo(points2[i]);
+  }
+  end = std::chrono::high_resolution_clock::now();
+  reportTime(start, end, count, "Initial bearing");
+
+  // Destination point.
+  start = std::chrono::high_resolution_clock::now();
+  for (int i = 0; i < count; ++i)
+  {
+    points1[i].destinationPoint(7794.0, 300.7);
+  }
+  end = std::chrono::high_resolution_clock::now();
+  reportTime(start, end, count, "Destination point");
 
   return s_failed == 0 ? 0 : 1;
 }
