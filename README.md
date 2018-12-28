@@ -35,6 +35,27 @@ int main(int argc, char **argv)
 }
 ```
 
+### Test
+
+There are unit tests provided for `erkir::Point` class. You can find them in the *test/* directory.
+To run them you have to build and run the test application. For doing that you must invoke the following
+commands from the terminal, assuming that compiler and environment are already configured:
+
+##### Linux (gcc)
+```
+cd test
+g++ -std=c++11 -Isrc -Iinclude test.cpp -o test
+./test
+```
+
+##### Windows
+```
+cd test
+cl /I..\src /I..\include /W4 /EHsc test.cpp /link /out:test.exe
+test
+```
+
+
 ## See Also
 
 * [Movable Type Scripts Latitude/Longitude Calculations Reference](http://www.movable-type.co.uk/scripts/latlong.html)
