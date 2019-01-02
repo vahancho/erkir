@@ -23,12 +23,12 @@ No installation required. Just incorparate header files from the include/ and so
 int main(int argc, char **argv)
 {
   // Calculate great-circle distance between two points.
-  erkir::Point p1{ 52.205, 0.119 };
-  erkir::Point p2{ 48.857, 2.351 };
+  erkir::spherical::Point p1{ 52.205, 0.119 };
+  erkir::spherical::Point p2{ 48.857, 2.351 };
   auto d = p1.distanceTo(p2); // 404.3 km
   
   // Get destination point by given distance (shortest) and bearing from start point.
-  erkir::Point p3{ 51.4778, -0.0015 };
+  erkir::spherical::Point p3{ 51.4778, -0.0015 };
   auto dest = p3.destinationPoint(7794.0, 300.7); // 51.5135°N, 000.0983°W
   
   return 0;
