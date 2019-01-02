@@ -1,7 +1,11 @@
 /**********************************************************************************
 *  MIT License                                                                    *
 *                                                                                 *
-*  Copyright (c) 2018 Vahan Aghajanyan <vahancho@gmail.com>                       *
+*  Copyright (c) 2018-2019 Vahan Aghajanyan <vahancho@gmail.com>                  *
+*                                                                                 *
+*  Latitude/longitude spherical geodesy tools         (c) Chris Veness 2002-2018  *
+*  www.movable-type.co.uk/scripts/latlong.html                                    *
+*  www.movable-type.co.uk/scripts/geodesy/docs/module-latlon-spherical.html       *
 *                                                                                 *
 *  Permission is hereby granted, free of charge, to any person obtaining a copy   *
 *  of this software and associated documentation files (the "Software"), to deal  *
