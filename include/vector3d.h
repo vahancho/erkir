@@ -1,4 +1,4 @@
-/**********************************************************************************
+﻿/**********************************************************************************
 *  MIT License                                                                    *
 *                                                                                 *
 *  Copyright (c) 2018-2019 Vahan Aghajanyan <vahancho@gmail.com>                  *
@@ -41,11 +41,14 @@ namespace erkir
   - etc
 
   Functions return vectors as return results, so that operations can be chained.
-  \example auto v = v1.cross(v2).dot(v3) // equivalent to v1 x v2 . v3
+  \example auto v = v1.cross(v2).dot(v3) // equivalent to v1 × v2 . v3
 */
 class Vector3d
 {
 public:
+  /// Creates an invalid 3-d vector.
+  Vector3d();
+
   /// Creates a 3-d vector.
   /*!
     The vector may be normalised, or use x/y/z values for eg height relative to the sphere or
@@ -57,11 +60,93 @@ public:
  */
   Vector3d(double x, double y, double z);
 
+  double x() const;
+  double y() const;
+  double z() const;
+  bool isValid() const;
+
+  /// Dot (scalar) product of two vectors.
+  double dot(const Vector3d &v) const;
+
+  /// Multiplies vector by the supplied vector using cross (vector) product.
+  Vector3d cross(const Vector3d &v) const;
+
+  /// Length (magnitude or norm) of 'this' vector
+  /*!
+    \returns Magnitude of this vector.
+  */
+  double length() const;
+
+  /// Normalizes a vector to its unit vector
+  /*!
+    If the vector is already unit or is zero magnitude, this is a no-op.
+    \returns Normalised version of this vector.
+ */
+  Vector3d unit() const;
+
+  /// Calculates the angle between 'this' vector and supplied vector.
+  /*!
+    \param v Supplied vector
+    \param n Plane normal: if supplied, angle is -PI..+PI, signed +ve if this->v is
+             clockwise looking along n, -ve in opposite direction (if not supplied, angle is always 0..PI).
+    \returns Angle (in radians) between this vector and supplied vector.
+  */
+  double angleTo(const Vector3d &v, const Vector3d &n = Vector3d()) const;
+
+  /// Rotates 'this' point around an axis by a specified angle.
+  /*!
+    \param axis The axis being rotated around.
+    \param theta The angle of rotation (in radians).
+    \returns The rotated point.
+ */
+  Vector3d rotateAround(const Vector3d &axis, double theta) const;
+
 private:
-  double m_x;
-  double m_y;
-  double m_z;
+  double m_x{ 0.0 };
+  double m_y{ 0.0 };
+  double m_z{ 0.0 };
+
+  bool m_isValid;
 };
+
+/// Vector addition
+Vector3d operator + (const Vector3d &v1, const Vector3d &v2)
+{
+  return Vector3d(v1.x() + v2.x(), v1.y() + v2.y(), v1.z() + v2.z());
+}
+
+/// Vector subtraction
+Vector3d operator - (const Vector3d &v1, const Vector3d & v2)
+{
+  return Vector3d(v1.x() - v2.x(), v1.y() - v2.y(), v1.z() - v2.z());
+}
+
+/// Unary negation of a vector
+/*!
+  Negates a vector to point in the opposite direction.
+*/
+Vector3d operator - (const Vector3d &v1)
+{
+  return Vector3d(-v1.x(), -v1.y(), -v1.z());
+}
+
+/// Multiplication of vector and scalar
+Vector3d operator * (const Vector3d &v1, double s)
+{
+  return Vector3d(v1.x() * s, v1.y() * s, v1.z() * s);
+}
+
+/// Division of vector and scalar
+Vector3d operator / (const Vector3d &v1, double s)
+{
+  return Vector3d(v1.x() / s, v1.y() / s, v1.z() / s);
+}
+
+/// Multiplication of scalar and vector
+Vector3d operator * (double s, const Vector3d &v1)
+{
+  return v1 * s;
+}
 
 } // erkir
 
