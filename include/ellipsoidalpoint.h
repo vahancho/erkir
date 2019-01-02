@@ -65,6 +65,14 @@ public:
     WGS84
   };
 
+  //! Constructs a point with the given \p latitude and \p longitude and \p datum.
+  Point(const Latitude &latitude, const Longitude &longitude, Datum datum = Datum::WGS84);
+
+  /// Return the datum.
+  Datum datum() const;
+
+private:
+  Datum m_datum;
 };
 
 } // ellipsoidal

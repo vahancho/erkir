@@ -173,6 +173,17 @@ static const std::unordered_map<Point::Datum, Datum> s_datums =
                               { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} } }
 };
 
+Point::Point(const Latitude &latitude, const Longitude &longitude, Point::Datum datum)
+  :
+    erkir::Point(latitude, longitude),
+    m_datum(datum)
+{}
+
+Point::Datum Point::datum() const
+{
+  return m_datum;
+}
+
 } // ellipsoidal
 
 } // erkir
