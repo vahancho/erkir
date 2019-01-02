@@ -25,7 +25,8 @@
 #include <random>
 #include <chrono>
 
-#include "point.h"
+#include "sphericalpoint.h"
+#include "sphericalpoint.cpp"
 #include "point.cpp"
 #include "coordinate.cpp"
 

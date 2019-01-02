@@ -18,7 +18,7 @@ No installation required. Just incorparate header files from the include/ and so
 ### Usage Examples:
 
 ```cpp
-#include "point.h"
+#include "sphericalpoint.h"
 
 int main(int argc, char **argv)
 {
