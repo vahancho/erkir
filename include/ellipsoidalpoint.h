@@ -45,6 +45,25 @@ namespace ellipsoidal
 class Point : public erkir::Point
 {
 public:
+  /// The datums.
+  /*!
+    Note that precision of various datums will vary, and WGS-84 (original) is not defined to be
+    accurate to better than ±1 metre. No transformation should be assumed to be accurate to better
+    than a meter; for many datums somewhat less.
+  */
+  enum class Datum
+  {
+    ED50,
+    Irl1975,
+    NAD27,
+    NAD83,
+    NTF,
+    OSGB36,
+    Potsdam,
+    TokyoJapan,
+    WGS72,
+    WGS84
+  };
 
 };
 
