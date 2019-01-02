@@ -29,30 +29,5 @@ using namespace erkir;
 
 int main()
 {
-  // Tests:
-  Point p1{ 52.205, 0.119 };
-  Point p2{ 48.857, 2.351 };
-  auto d = p1.distanceTo(p2); // 404.3 km
-
-  auto b1 = p1.bearingTo(p2);      // 156.2°
-  auto b2 = p1.finalBearingTo(p2); // 157.9°
-  auto pMid1 = p1.midpointTo(p2);   // 50.5363°N, 001.2746°E
-  auto pMid2 = p1.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
-
-  Point p3{ 51.4778, -0.0015 };
-  auto dest = p3.destinationPoint(7794.0, 300.7); // 51.5135°N, 000.0983°W
-  auto intersect = Point::intersection({ 51.8853, 0.2545 }, 108.547,
-                                                { 49.0034, 2.5735 }, 32.435);
-  assert(intersect.isValid());
-
-  Point pCurrent{ 53.2611, -0.7972 };
-  auto dist = pCurrent.crossTrackDistanceTo({ 53.3206, -1.7297 },
-                                                     { 53.1887,  0.1334 }); // -307.5 m
-  dist = pCurrent.alongTrackDistanceTo({ 53.3206, -1.7297 },
-                                       { 53.1887,  0.1334 }); // 62.331 km
-
-  dist = pCurrent.alongTrackDistanceTo({ 53.2611, -0.7972 },
-                                       { 53.1887,  0.1334 }); // 0.0 km
-
   return 0;
 }

@@ -35,6 +35,9 @@
 namespace erkir
 {
 
+namespace spherical
+{
+
 //! Implements the geographical point.
 /*!
   All formulae in this class are for calculations on the basis of a spherical earth
@@ -161,7 +164,7 @@ public:
       auto pInt = intersection(p1, brng1, p2, brng2); // 50.9078°N, 004.5084°E
   */
   static Point intersection(const Point &p1, double brng1,
-                                     const Point &p2, double brng2);
+                            const Point &p2, double brng2);
 
   /// Returns (signed) distance from 'this' point to great circle defined by start - point and end - point.
   /*!
@@ -177,7 +180,7 @@ public:
       auto d = pCurrent.crossTrackDistanceTo(p1, p2);  // -307.5 m
   */
   double crossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
-                                       double radius = 6371e3) const;
+                              double radius = 6371e3) const;
 
   /// Returns how far 'this' point is along a path from start-point.
   /*!
@@ -197,7 +200,7 @@ public:
       auto d = pCurrent.alongTrackDistanceTo(p1, p2);  // 62.331 km
   */
   double alongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
-                                       double radius = 6371e3) const;
+                              double radius = 6371e3) const;
 
   /// Returns maximum latitude reached when travelling on a great circle.
   /*!
@@ -294,7 +297,9 @@ private:
   bool m_isValid;
 };
 
-}
+} // spherical
+
+} // erkir
 
 #endif // POINT_H
 

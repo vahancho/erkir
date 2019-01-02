@@ -34,6 +34,9 @@
 namespace erkir
 {
 
+namespace spherical
+{
+
 /// Normalise angle to -180..+180°
 static double normalizeAngle(double degrees)
 {
@@ -194,8 +197,7 @@ Point Point::destinationPoint(double distance, double bearing, double radius) co
                normalizeAngle(Coordinate::toDegrees(lambda2))); // normalise to -180..+180°
 }
 
-Point Point::intersection(const Point &p1, double brng1,
-                                   const Point &p2, double brng2)
+Point Point::intersection(const Point &p1, double brng1, const Point &p2, double brng2)
 {
   // see www.edwilliams.org/avform.htm#Intersection
 
@@ -245,7 +247,7 @@ Point Point::intersection(const Point &p1, double brng1,
 }
 
 double Point::crossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
-                                            double radius) const
+                                   double radius) const
 {
   auto d13 = pathStart.distanceTo(*this, radius) / radius;
   auto theta13 = Coordinate::toRadians(pathStart.bearingTo(*this));
@@ -257,7 +259,7 @@ double Point::crossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
 }
 
 double Point::alongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
-                                            double radius) const
+                                   double radius) const
 {
   auto d13 = pathStart.distanceTo(*this, radius) / radius;
   auto theta13 = Coordinate::toRadians(pathStart.bearingTo(*this));
@@ -318,10 +320,10 @@ double Point::rhumbBearingTo(const Point &point) const
   auto deltaLambda = point.longitude().radians() - m_longitude.radians();
   // If dLon over 180° take shorter rhumb line across the anti-meridian:
   if (deltaLambda > Coordinate::pi()) {
-    deltaLambda -= 2 * Coordinate::pi();
+    deltaLambda -= 2.0 * Coordinate::pi();
   }
   if (deltaLambda < -Coordinate::pi()) {
-    deltaLambda += 2 * Coordinate::pi();
+    deltaLambda += 2.0 * Coordinate::pi();
   }
 
   auto deltaPsi = std::log(std::tan(phi2 / 2.0 + Coordinate::pi() / 4.0) /
@@ -451,5 +453,7 @@ bool Point::operator!=(const Point &other) const
   return !(*this == other);
 }
 
-}
+} // spherical
+
+} // erkir
 

@@ -58,7 +58,7 @@ static bool verifyDouble(double value, double expected, const std::string &locat
   return true;
 }
 
-static bool verifyPoint(const Point &point, const Point &expectedPoint,
+static bool verifyPoint(const spherical::Point &point, const spherical::Point &expectedPoint,
                         const std::string &location)
 {
   if (point.isValid() != expectedPoint.isValid())
@@ -83,14 +83,14 @@ static bool verifyPoint(const Point &point, const Point &expectedPoint,
   return true;
 }
 
-static std::vector<Point> randomPoints(int count)
+static std::vector<spherical::Point> randomPoints(int count)
 {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<double> latitudeDistr{ -90.0, 90.0 };
   std::uniform_real_distribution<double> longitudeDistr{ -180.0, 180.0 };
 
-  std::vector<Point> points;
+  std::vector<spherical::Point> points;
   for (int i = 0; i < count; ++i)
   {
     points.emplace_back(latitudeDistr(gen), longitudeDistr(gen));
@@ -110,49 +110,49 @@ static void reportTime(std::chrono::time_point<std::chrono::high_resolution_cloc
 int main()
 {
   {
-    Point p1{ 52.205, 0.119 };
-    Point p2{ 48.857, 2.351 };
+    spherical::Point p1{ 52.205, 0.119 };
+    spherical::Point p2{ 48.857, 2.351 };
     verifyDouble(404279.164, p1.distanceTo(p2), LOCATION);  // 404.3 km
     verifyDouble(156.167, p1.bearingTo(p2), LOCATION);      // 156.2°
     verifyDouble(157.890, p1.finalBearingTo(p2), LOCATION); // 157.9°
   }
   {
-    Point p1{ 52.205, 0.119 };
-    Point p2{ 48.857, 2.351 };
+    spherical::Point p1{ 52.205, 0.119 };
+    spherical::Point p2{ 48.857, 2.351 };
     auto pMid1 = p1.midpointTo(p2); // 50.5363°N, 001.2746°E
     verifyPoint(pMid1, { 50.5363, 1.2746 }, LOCATION);
   }
   {
-    Point p1{ 52.205, 0.119 };
-    Point p2{ 48.857, 2.351 };
+    spherical::Point p1{ 52.205, 0.119 };
+    spherical::Point p2{ 48.857, 2.351 };
     auto pMid = p1.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
     verifyPoint(pMid, { 51.3721, 0.7073 }, LOCATION);
   }
   {
-    Point p3{ 51.4778, -0.0015 };
+    spherical::Point p3{ 51.4778, -0.0015 };
     auto dest = p3.destinationPoint(7794.0, 300.7); // 51.5135°N, 000.0983°W
     verifyPoint(dest, { 51.5135, -0.0983 /*W*/}, LOCATION);
   }
   {
-    auto intersect = Point::intersection({ 51.8853, 0.2545 }, 108.547,
+    auto intersect = spherical::Point::intersection({ 51.8853, 0.2545 }, 108.547,
                                          { 49.0034, 2.5735 }, 32.435); // 50.9078°N, 004.5084°
     verifyPoint(intersect, { 50.9078, 4.5084 }, LOCATION);
   }
 
   {
-    Point p{ 53.2611, -0.7972 };
+    spherical::Point p{ 53.2611, -0.7972 };
     auto dist = p.crossTrackDistanceTo({ 53.3206, -1.7297 },
                                        { 53.1887,  0.1334 }); // -307.5 m
     verifyDouble(-307.550, dist, LOCATION);
   }
   {
-    Point p{ 53.2611, -0.7972 };
+    spherical::Point p{ 53.2611, -0.7972 };
     auto dist = p.alongTrackDistanceTo({ 53.3206, -1.7297 },
                                        { 53.1887,  0.1334 }); // 62.331 km
     verifyDouble(62331.493, dist, LOCATION);
   }
   {
-    Point p{ 53.2611, -0.7972 };
+    spherical::Point p{ 53.2611, -0.7972 };
     auto dist = p.alongTrackDistanceTo({ 53.2611, -0.7972 },
                                        { 53.1887,  0.1334 }); // 0.0 km
     verifyDouble(0.0, dist, LOCATION);
@@ -160,31 +160,31 @@ int main()
 
   // Rhumb functions.
   {
-    Point p1{ 51.127, 1.338 };
-    Point p2{ 50.964, 1.853 };
+    spherical::Point p1{ 51.127, 1.338 };
+    spherical::Point p2{ 50.964, 1.853 };
     verifyDouble(40307.745, p1.rhumbDistanceTo(p2), LOCATION); // 40.31 km
   }
   {
-    Point p1{ 51.127, 1.338 };
-    Point p2{ 50.964, 1.853 };
+    spherical::Point p1{ 51.127, 1.338 };
+    spherical::Point p2{ 50.964, 1.853 };
     verifyDouble(116.722, p1.rhumbBearingTo(p2), LOCATION); // 116.7°
   }
   {
-    Point p1{ 51.127, 1.338 };
+    spherical::Point p1{ 51.127, 1.338 };
     auto p2 = p1.rhumbDestinationPoint(40300, 116.7); // 50.9642°N, 001.8530°E
     verifyPoint(p2, { 50.9642, 001.8530 }, LOCATION);
   }
   {
-    Point p1{ 51.127, 1.338 };
-    Point p2{ 50.964, 1.853 };
+    spherical::Point p1{ 51.127, 1.338 };
+    spherical::Point p2{ 50.964, 1.853 };
     auto pMid = p1.rhumbMidpointTo(p2); // 51.0455°N, 001.5957°E
     verifyPoint(pMid, { 51.0455, 001.5957 }, LOCATION);
   }
 
   // Area
   {
-    std::vector<Point> polygon = { {0, 0}, {1, 0}, {0, 1} };
-    verifyDouble(6182469722.731, Point::areaOf(polygon), LOCATION); // 6.18e9 m²
+    std::vector<spherical::Point> polygon = { {0, 0}, {1, 0}, {0, 1} };
+    verifyDouble(6182469722.731, spherical::Point::areaOf(polygon), LOCATION); // 6.18e9 m²
   }
 
   printf("Total tests: %d, passed: %d, failed: %d\n", s_passed + s_failed, s_passed, s_failed);
