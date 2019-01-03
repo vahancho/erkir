@@ -35,6 +35,16 @@ namespace erkir
 namespace ellipsoidal
 {
 
+/// Functor object to calculate hash for scoped enum types.
+struct EnumHash
+{
+  template <class T>
+  std::size_t operator()(T type) const
+  {
+    return static_cast<int>(type);
+  }
+};
+
 struct Ellipsoid
 {
   enum class Type
@@ -71,7 +81,7 @@ struct Ellipsoid
 };
 
 /// Ellipsoid parameters; major axis (a), minor axis (b), and flattening (f) for each ellipsoid.
-static const std::unordered_map<Ellipsoid::Type, Ellipsoid> s_ellipsoids =
+static const std::unordered_map<Ellipsoid::Type, Ellipsoid, EnumHash> s_ellipsoids =
 {
   { Ellipsoid::Type::WGS84,         { 6378137.0,   6356752.314245, 1.0 / 298.257223563 } },
   { Ellipsoid::Type::Airy1830,      { 6377563.396, 6356256.909,    1.0 / 299.3249646 } },
@@ -168,7 +178,7 @@ struct Datum
     - ETRS89 reference frames are coincident with WGS-84 at epoch 1989.0
       (ie null transform) at the one metre level.
 */
-static const std::unordered_map<Point::Datum, Datum> s_datums =
+static const std::unordered_map<Point::Datum, Datum, EnumHash> s_datums =
 {
   { Point::Datum::ED50,       { s_ellipsoids.at(Ellipsoid::Type::Intl1924),
                               { 89.5, 93.8, 123.1, -1.2, 0.0, 0.0, 0.156} } }, // epsg.io/1311
