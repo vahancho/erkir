@@ -197,6 +197,10 @@ int main()
     ellipsoidal::Point pWGS84(51.4778, -0.0016, ellipsoidal::Point::Datum::WGS84);
     auto pOSGB = pWGS84.convertToDatum(ellipsoidal::Point::Datum::OSGB36); // 51.4773°N, 000.0000°E
     verifyPoint(pOSGB, { 51.4779, 000.0000 }, LOCATION);
+
+    // Should return to the same coordinates.
+    pWGS84 = pOSGB.convertToDatum(ellipsoidal::Point::Datum::WGS84);
+    verifyPoint(pWGS84, { 51.4778, -0.0016 }, LOCATION);
   }
 
 
