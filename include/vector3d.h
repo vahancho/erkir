@@ -110,13 +110,13 @@ private:
 };
 
 /// Vector addition
-Vector3d operator + (const Vector3d &v1, const Vector3d &v2)
+inline Vector3d operator + (const Vector3d &v1, const Vector3d &v2)
 {
   return Vector3d(v1.x() + v2.x(), v1.y() + v2.y(), v1.z() + v2.z());
 }
 
 /// Vector subtraction
-Vector3d operator - (const Vector3d &v1, const Vector3d & v2)
+inline Vector3d operator - (const Vector3d &v1, const Vector3d & v2)
 {
   return Vector3d(v1.x() - v2.x(), v1.y() - v2.y(), v1.z() - v2.z());
 }
@@ -125,25 +125,25 @@ Vector3d operator - (const Vector3d &v1, const Vector3d & v2)
 /*!
   Negates a vector to point in the opposite direction.
 */
-Vector3d operator - (const Vector3d &v1)
+inline Vector3d operator - (const Vector3d &v1)
 {
   return Vector3d(-v1.x(), -v1.y(), -v1.z());
 }
 
 /// Multiplication of vector and scalar
-Vector3d operator * (const Vector3d &v1, double s)
+inline Vector3d operator * (const Vector3d &v1, double s)
 {
   return Vector3d(v1.x() * s, v1.y() * s, v1.z() * s);
 }
 
 /// Division of vector and scalar
-Vector3d operator / (const Vector3d &v1, double s)
+inline Vector3d operator / (const Vector3d &v1, double s)
 {
   return Vector3d(v1.x() / s, v1.y() / s, v1.z() / s);
 }
 
 /// Multiplication of scalar and vector
-Vector3d operator * (double s, const Vector3d &v1)
+inline Vector3d operator * (double s, const Vector3d &v1)
 {
   return v1 * s;
 }
