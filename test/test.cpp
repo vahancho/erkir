@@ -27,8 +27,11 @@
 
 #include "sphericalpoint.h"
 #include "sphericalpoint.cpp"
+#include "ellipsoidalpoint.h"
+#include "ellipsoidalpoint.cpp"
 #include "point.cpp"
 #include "coordinate.cpp"
+#include "vector3d.cpp"
 
 using namespace erkir;
 
@@ -59,7 +62,7 @@ static bool verifyDouble(double value, double expected, const std::string &locat
   return true;
 }
 
-static bool verifyPoint(const spherical::Point &point, const spherical::Point &expectedPoint,
+static bool verifyPoint(const Point &point, const Point &expectedPoint,
                         const std::string &location)
 {
   if (point.isValid() != expectedPoint.isValid())
@@ -187,6 +190,17 @@ int main()
     std::vector<spherical::Point> polygon = { {0, 0}, {1, 0}, {0, 1} };
     verifyDouble(6182469722.731, spherical::Point::areaOf(polygon), LOCATION); // 6.18e9 m²
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  {
+    ellipsoidal::Point pWGS84(51.4778, -0.0016, ellipsoidal::Point::Datum::WGS84);
+    auto pOSGB = pWGS84.convertToDatum(ellipsoidal::Point::Datum::OSGB36); // 51.4773°N, 000.0000°E
+    verifyPoint(pOSGB, { 51.4779, 000.0000 }, LOCATION);
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////
 
   printf("Total tests: %d, passed: %d, failed: %d\n", s_passed + s_failed, s_passed, s_failed);
 

@@ -30,6 +30,7 @@
 #define ELLIPSOIDAL_POINT_H
 
 #include "point.h"
+#include "vector3d.h"
 
 namespace erkir
 {
@@ -70,6 +71,31 @@ public:
 
   /// Return the datum.
   Datum datum() const;
+
+  /// Converts 'this' point's coordinate system to new one.
+  /*!
+    \param   toDatum Datum this coordinate is to be converted to.
+    \returns This point converted to new datum.
+
+    \example
+      Point pWGS84(51.4778, -0.0016, Datum::WGS84);
+      auto pOSGB = pWGS84.convertToDatum(Datum::OSGB36); // 51.4773°N, 000.0000°E
+  */
+  Point &convertToDatum(Datum toDatum);
+
+  /// Converts 'this' point from (geodetic) coordinates to (geocentric) Cartesian (x/y/z) coordinates.
+  /*!
+    \returns Vector pointing to lat/lon point, with x, y, z in metres from earth centre.
+  */
+  Vector3d toCartesian();
+
+  /// Converts geocentric Cartesian(x/y/z) point to (ellipsoidal geodetic) coordinates on specified datum.
+  /*!
+    Uses Bowring’s (1985) formulation for mm precision in concise form.
+    \param vector The point to convert.
+    \param datum Datum to use when converting point.
+  */
+  Point toPoint(const Vector3d &vector, Datum datum);
 
 private:
   Datum m_datum;
