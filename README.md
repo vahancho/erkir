@@ -13,7 +13,17 @@ For more details see the CI badges (*Travis CI & AppVeyor CI*) above.
 
 ### Installation
 
-No installation required. Just incorparate header files from the include/ and source files from src/ directories in your project and compile them. All library calsses are in *erkir* namespace.
+No installation required. Just incorporate header files from the include/ and source files from src/ directories in your project and compile them. All library classes are in *erkir* namespace.
+
+### The API
+
+The code is virtually split into two domains (namespaces) that represent spherical and ellipsoidal earth models: `erkir::spherical` and `erkir::ellipsoidal` correspondingly. Spherical Earth model based calculations are accurate enough for most cases, however in order to gain more precise measurements use `erkir::ellipsoidal` classes.
+
+`erkir::spherical::Point` class implements geodetic point on the basis of a spherical earth (ignoring ellipsoidal effects). It uses formulae to calculate distances between two points (using haversine formula), initial bearing from a point, final bearing to a point, etc.
+
+`erkir::ellipsoidal::Point` class represents geodetic point based on ellipsoidal earth model. It includes ellipsoid parameters and datums for different coordinate systems, and methods for converting between them and to Cartesian coordinates.
+
+`erkir::Vector3d` implements 3-d vector manipulation routines. With this class you can perform basic operations with the vectors, such as calculate dot (scalar) product of two vectors, multiply vectors, add and subtract them.
 
 ### Usage Examples:
 
@@ -31,6 +41,10 @@ int main(int argc, char **argv)
   erkir::spherical::Point p3{ 51.4778, -0.0015 };
   auto dest = p3.destinationPoint(7794.0, 300.7); // 51.5135°N, 000.0983°W
   
+  // Convert a point from one coordinates system to another.
+  erkir::ellipsoidal::Point pWGS84(51.4778, -0.0016, ellipsoidal::Point::Datum::WGS84);
+  auto pOSGB = pWGS84.convertToDatum(ellipsoidal::Point::Datum::OSGB36); // 51.4778°N, 000.0000°E
+
   return 0;
 }
 ```
