@@ -193,6 +193,7 @@ int main()
 
   //////////////////////////////////////////////////////////////////////////////
 
+  // Datum conversion.
   {
     ellipsoidal::Point pWGS84(51.4778, -0.0016, ellipsoidal::Point::Datum::WGS84);
     auto pOSGB = pWGS84.convertToDatum(ellipsoidal::Point::Datum::OSGB36); // 51.4773°N, 000.0000°E
@@ -203,6 +204,29 @@ int main()
     verifyPoint(pWGS84, { 51.4778, -0.0016 }, LOCATION);
   }
 
+  // Vector3D
+  {
+    Vector3d v{};
+    v.isValid() ? ++s_failed : ++s_passed;
+  }
+  {
+    Vector3d v{3.0, 4.0, 0.0};
+    verifyDouble(v.length(), 5.0, LOCATION);
+  }
+  {
+    Vector3d v{ 0.0, 0.0, 0.0 };
+    verifyDouble(v.length(), 0.0, LOCATION);
+  }
+  {
+    Vector3d v1{ 0.0, 0.0, 0.0 };
+    Vector3d v2{ 1.0, 2.0, 3.0 };
+    verifyDouble(v1.dot(v2), 0.0, LOCATION);
+  }
+  {
+    Vector3d v1{ 2.0, 2.0, 2.0 };
+    Vector3d v2{ 2.0, 2.0, 2.0 };
+    verifyDouble(v1.dot(v2), 12.0, LOCATION);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
