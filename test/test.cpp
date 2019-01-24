@@ -227,6 +227,31 @@ int main()
     Vector3d v2{ 2.0, 2.0, 2.0 };
     verifyDouble(v1.dot(v2), 12.0, LOCATION);
   }
+  {
+    // Orthogonal vectors.
+    Vector3d v1{ 1.0, 0.0, 0.0 };
+    Vector3d v2{ 0.0, 1.0, 0.0 };
+    auto v3 = v1.cross(v2);
+    verifyDouble(v3.x(), 0.0, LOCATION);
+    verifyDouble(v3.y(), 0.0, LOCATION);
+    verifyDouble(v3.z(), 1.0, LOCATION);
+  }
+  {
+    Vector3d v1{ 3.0, 0.0, 0.0 };
+    Vector3d v2{ 0.0, 4.0, 0.0 };
+    auto v3 = v1.cross(v2);
+    verifyDouble(v3.x(), 0.0, LOCATION);
+    verifyDouble(v3.y(), 0.0, LOCATION);
+    verifyDouble(v3.z(), 12.0, LOCATION);
+  }
+  {
+    Vector3d v1{ 1.0, 2.0, 3.0 };
+    Vector3d v2{ 4.0, 5.0, 6.0 };
+    auto v3 = v1.cross(v2);
+    verifyDouble(v3.x(), -3.0, LOCATION);
+    verifyDouble(v3.y(), 6.0, LOCATION);
+    verifyDouble(v3.z(), -3.0, LOCATION);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
