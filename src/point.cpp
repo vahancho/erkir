@@ -31,7 +31,7 @@ Point::Point()
   :
     m_latitude(0.0),
     m_longitude(0.0),
-    m_isValid(true)
+    m_isValid(false)
 {}
 
 Point::Point(const Latitude &latitude, const Longitude &longitude)

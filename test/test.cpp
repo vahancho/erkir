@@ -114,6 +114,18 @@ static void reportTime(std::chrono::time_point<std::chrono::high_resolution_cloc
 int main()
 {
   {
+    Point p{};
+    p.isValid() ? ++s_failed : ++s_passed;
+    verifyDouble(0.0, p.latitude().degrees(), LOCATION);
+    verifyDouble(0.0, p.longitude().degrees(), LOCATION);
+  }
+  {
+    spherical::Point p{};
+    p.isValid() ? ++s_failed : ++s_passed;
+    verifyDouble(0.0, p.latitude().degrees(), LOCATION);
+    verifyDouble(0.0, p.longitude().degrees(), LOCATION);
+  }
+  {
     spherical::Point p1{ 52.205, 0.119 };
     spherical::Point p2{ 48.857, 2.351 };
     verifyDouble(404279.164, p1.distanceTo(p2), LOCATION);  // 404.3 km
