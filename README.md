@@ -71,7 +71,7 @@ test
 
 ### Performance Tests
 
-I measured performance for some spherical geodesy functions (`Point` class). I used similar approach as Chris Veness did in his tests, i.e. called functions for 5000 random points or pairs of points. And here are my results:
+I measured performance (on Intel Core i5 series processor) for some spherical geodesy functions (`Point` class). I used similar approach as Chris Veness did in his tests, i.e. called functions for 5000 random points or pairs of points. And here are my results:
 
 | Function             | Avg. time/calculation (nanoseconds)|
 | -------------------- |:----------------------------------:|
@@ -79,7 +79,7 @@ I measured performance for some spherical geodesy functions (`Point` class). I u
 | Initial bearing      | 190                                |
 | Destination point    | 227                                |
 
-*of course timeings are machine dependent*
+*of course timings are machine dependent*
 
 ## See Also
 
