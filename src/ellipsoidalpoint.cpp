@@ -93,7 +93,8 @@ std::unique_ptr<cartesian::Point> Point::toCartesianPoint()
   auto y = (nu + h) * cosPhi * sinLambda;
   auto z = (nu * (1.0 - eSq) + h) * sinPhi;
 
-  return std::make_unique<cartesian::Point>(x, y, z, currentDatum);
+  /// TODO: Replace it with std::make_unique (since C++14)
+  return std::unique_ptr<cartesian::Point>(new cartesian::Point(x, y, z, currentDatum));
 }
 
 } // ellipsoidal

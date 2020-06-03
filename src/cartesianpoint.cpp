@@ -74,10 +74,11 @@ std::unique_ptr<ellipsoidal::Point> Point::toGeoPoint() const
   auto nu = a / std::sqrt(1 - e2 * sinPhi * sinPhi); // Length of the normal terminated by the minor axis
   auto h = p * cosphi + z() * sinPhi - (a * a / nu);
 
-  return std::make_unique<ellipsoidal::Point>(Coordinate::toDegrees( phi ),
-                                              Coordinate::toDegrees( lambda ),
-                                              h,
-                                              m_datum);
+  /// TODO: Replace it with std::make_unique (since C++14)
+  return std::unique_ptr<ellipsoidal::Point>(new ellipsoidal::Point(Coordinate::toDegrees( phi ),
+                                                                    Coordinate::toDegrees( lambda ),
+                                                                    h,
+                                                                    m_datum));
 }
 
 Point &Point::toDatum(ellipsoidal::Datum::Type targetDatum)
