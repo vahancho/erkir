@@ -55,9 +55,9 @@ public:
   /// Returns the distance from this point to destination point(using haversine formula).
   /*!
     This function uses calculations on the basis of a spherical earth
-    (ignoring ellipsoidal effects) – which is accurate enough for most purposes.
+    (ignoring ellipsoidal effects) â€“ which is accurate enough for most purposes.
     It uses the 'haversine' formula to calculate the great-circle distance between
-    two points – that is, the shortest distance over the earth's surface – giving
+    two points â€“ that is, the shortest distance over the earth's surface â€“ giving
     an 'as-the-crow-flies' distance between the points.
 
     \param point Latitude/longitude of destination point.
@@ -79,7 +79,7 @@ public:
     \example
       Point p1{ 52.205, 0.119 };
       Point p2{ 48.857, 2.351 };
-      auto b1 = p1.bearingTo(p2); // 156.2°
+      auto b1 = p1.bearingTo(p2); // 156.2Â°
   */
   double bearingTo(const Point &point) const;
 
@@ -94,7 +94,7 @@ public:
     \example
       Point p1{52.205, 0.119};
       Point p2{48.857, 2.351};
-      auto b2 = p1.finalBearingTo(p2); // 157.9°
+      auto b2 = p1.finalBearingTo(p2); // 157.9Â°
   */
   double finalBearingTo(const Point &point) const;
 
@@ -106,7 +106,7 @@ public:
     \example
       Point p1{52.205, 0.119};
       Point p2{48.857, 2.351};
-      auto pMid = p1.midpointTo(p2); // 50.5363°N, 001.2746°E
+      auto pMid = p1.midpointTo(p2); // 50.5363Â°N, 001.2746Â°E
   */
   Point midpointTo(const Point &point) const;
 
@@ -119,7 +119,7 @@ public:
    \example
     Point p1{52.205, 0.119};
     Point p2{48.857, 2.351};
-    auto pMid = p1.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
+    auto pMid = p1.intermediatePointTo(p2, 0.25); // 51.3721Â°N, 000.7073Â°E
   */
   Point intermediatePointTo(const Point &point, double fraction) const;
 
@@ -135,7 +135,7 @@ public:
 
     \example
       Point p1{51.4778, -0.0015};
-      Point p2 = p1.destinationPoint(7794, 300.7); // 51.5135°N, 000.0983°W
+      Point p2 = p1.destinationPoint(7794, 300.7); // 51.5135Â°N, 000.0983Â°W
   */
   Point destinationPoint(double distance, double bearing, double radius = 6371e3) const;
 
@@ -152,7 +152,7 @@ public:
       auto brng1 = 108.547;
       Point p2{49.0034, 2.5735}
       auto brng2 = 32.435;
-      auto pInt = intersection(p1, brng1, p2, brng2); // 50.9078°N, 004.5084°E
+      auto pInt = intersection(p1, brng1, p2, brng2); // 50.9078Â°N, 004.5084Â°E
   */
   static Point intersection(const Point &p1, double brng1,
                             const Point &p2, double brng2);
@@ -213,8 +213,8 @@ public:
     all meridians at the same angle. Sailors used to (and sometimes still) navigate
     along rhumb lines since it is easier to follow a constant compass bearing than
     to be continually adjusting the bearing, as is needed to follow a great circle.
-    Rhumb lines are straight lines on a Mercator Projec­tion map (also helpful for
-    naviga­tion). Rhumb lines are generally longer than great-circle (orthodrome) routes.
+    Rhumb lines are straight lines on a Mercator ProjecÂ­tion map (also helpful for
+    navigaÂ­tion). Rhumb lines are generally longer than great-circle (orthodrome) routes.
 
     \param   point Latitude/longitude of destination point.
     \param   radius (Mean) radius of earth (defaults to radius in 6371e3 metres).
@@ -248,7 +248,7 @@ public:
 
     \example
       Point p1{51.127, 1.338};
-      auto p2 = p1.rhumbDestinationPoint(40300, 116.7); // 50.9642°N, 001.8530°E
+      auto p2 = p1.rhumbDestinationPoint(40300, 116.7); // 50.9642Â°N, 001.8530Â°E
   */
   Point rhumbDestinationPoint(double distance, double bearing, double radius = 6371e3) const;
 
@@ -260,7 +260,7 @@ public:
     \example
       Point p1{51.127, 1.338};
       Point p2{50.964, 1.853};
-      auto pMid = p1.rhumbMidpointTo(p2); // 51.0455°N, 001.5957°E
+      auto pMid = p1.rhumbMidpointTo(p2); // 51.0455Â°N, 001.5957Â°E
   */
   Point rhumbMidpointTo(const Point &point) const;
 
@@ -272,7 +272,7 @@ public:
 
     \example
       std::vector<Point> polygon = {{0,0}, {1,0}, {0,1}};
-      auto area = Point::areaOf(polygon); // 6.18e9 m²
+      auto area = Point::areaOf(polygon); // 6.18e9 mÐ†
   */
   static double areaOf(const std::vector<Point> &polygon, double radius = 6371e3);
 };

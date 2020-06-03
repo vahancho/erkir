@@ -4,12 +4,16 @@ project(erkir)
 set (CMAKE_CXX_STANDARD 11)
 
 add_library(erkir
+    include/cartesianpoint.h
     include/coordinate.h
+    include/datum.h
     include/ellipsoidalpoint.h
     include/point.h
     include/sphericalpoint.h
     include/vector3d.h
+    src/cartesianpoint.cpp
     src/coordinate.cpp
+    src/datum.cpp
     src/ellipsoidalpoint.cpp
     src/point.cpp
     src/sphericalpoint.cpp

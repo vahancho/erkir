@@ -72,7 +72,7 @@ Latitude::Latitude(double degree)
 {
   if (degree > 90.0 || degree < -90.0)
   {
-    throw std::out_of_range("Latitude measurements range from 0° to (+/–)90°.");
+    throw std::out_of_range("Latitude measurements range from 0Â° to (+/â€“)90Â°.");
   }
 }
 
@@ -84,7 +84,7 @@ Longitude::Longitude(double degree)
 {
   if (degree > 180.0 || degree < -180.0)
   {
-    throw std::out_of_range("Longitude measurements range from 0° to (+/–)180°.");
+    throw std::out_of_range("Longitude measurements range from 0Â° to (+/â€“)180Â°.");
   }
 }
 

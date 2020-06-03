@@ -1,7 +1,7 @@
 /**********************************************************************************
 *  MIT License                                                                    *
 *                                                                                 *
-*  Copyright (c) 2018-2020 Vahan Aghajanyan <vahancho@gmail.com>                  *
+*  Copyright (c) 2020 Vahan Aghajanyan <vahancho@gmail.com>                       *
 *                                                                                 *
 *  Geodesy tools for conversions between (historical) datums                      *
 *  (c) Chris Veness 2005-2019                                                     *
@@ -27,14 +27,8 @@
 *  SOFTWARE.                                                                      *
 ***********************************************************************************/
 
-#ifndef ELLIPSOIDAL_POINT_H
-#define ELLIPSOIDAL_POINT_H
-
-#include <memory>
-
-#include "point.h"
-#include "datum.h"
-
+#ifndef DATUM_H
+#define DATUM_H
 
 namespace erkir
 {
@@ -47,49 +41,78 @@ namespace cartesian
 namespace ellipsoidal
 {
 
-//! Implements geodetic point based on ellipsoidal earth model.
+/// Implements a geodetic datum.
 /*!
-  Includes ellipsoid parameters and datums for different coordinate systems, and methods for
-  converting between them and to Cartesian coordinates.
+  Note that precision of various datums will vary, and WGS-84 (original) is not defined to be
+  accurate to better than ±1 metre. No transformation should be assumed to be accurate to better
+  than a meter; for many datums somewhat less.
 */
-class Point : public erkir::Point
+class Datum
 {
 public:
-  //! Constructs a point with the given \p latitude, \p longitude \p height above ellipsoid in metres and \p datum.
-  Point(const Latitude &latitude, const Longitude &longitude, double height = 0.0,
-        const Datum &datum = {Datum::Type::WGS84});
+  enum class Type
+  {
+    ED50,       /*!< The older European Datum */
+    Irl1975,
+    NAD27,      /*!< The older North American Datum, of which NAD83 was basically a readjustment */
+    NAD83,      /*!< The North American Datum which is very similar to WGS 84 */
+    NTF,        /*!< Nouvelle Triangulation Francaise */
+    OSGB36,     /*!< Of the Ordnance Survey of Great Britain */
+    Potsdam,    /*!< The local datum of Germany with underlying Bessel ellipsoid */
+    TokyoJapan,
+    WGS72,      /*!< 72 of the World Geodetic System */
+    WGS84       /*!< 84 of the World Geodetic System */
+  };
 
-  /// Return the datum.
-  Datum datum() const;
+  //! Constructs a datum with the given \p type. WGS84 is the default datum.
+  Datum(Type type = Type::WGS84);
 
-  /// Returns height above the ellipsoid.
-  double height() const;
+  //! Implements a reference ellipsoid.
+  struct Ellipsoid
+  {
+    enum class Type
+    {
+      WGS84,
+      Airy1830,
+      AiryModified,
+      Bessel1841,
+      Clarke1866,
+      Clarke1880IGN,
+      GRS80,
+      Intl1924, // aka Hayford
+      WGS72
+    };
 
-  /// Converts 'this' point's coordinate system to new one.
-  /*!
-    \param   toDatum Datum this coordinate is to be converted to.
-    \returns Reference to this point converted to new datum.
+    Ellipsoid(double a, double b, double f);
 
-    \example
-      Point pWGS84(51.47788, -0.00147, Datum::Type::WGS84);
-      auto pOSGB = pWGS84.toDatum(Datum::Type::OSGB36); // 51.4773°N, 000.0001°E
-  */
-  Point &toDatum(Datum::Type toDatum);
+    /// Major axis (a).
+    double m_a{0.0};
 
-  /// Converts 'this' point from (geodetic) coordinates to (geocentric) Cartesian (x/y/z) coordinates.
-  /*!
-    \returns Cartesian point equivalent to lat/lon point, with x, y, z in metres from earth centre.
-  */
-  std::unique_ptr<cartesian::Point> toCartesianPoint();
+    /// Minor axis (b).
+    double m_b{0.0};
+
+    /// Flattening (f).
+    double m_f{0.0};
+  };
+
+  /// Returns the reference ellipsoid for this datum.
+  const Ellipsoid &ellipsoid() const;
+
+  /// Returns the type of this datum.
+  Type type() const;
+
+  /// Converts the given cartesian \p point to the \p targetDatum.
+  void toDatum(cartesian::Point &point, Type targetDatum) const;
+
+  /// Compares two datums.
+  bool operator==(const Datum &other) const;
 
 private:
-  double m_height{ 0.0 };
-  Datum m_datum;
+  Type m_type{Type::WGS84};
 };
 
 } // ellipsoidal
 
 } // erkir
 
-#endif // ELLIPSOIDAL_POINT_H
-
+#endif // DATUM_H

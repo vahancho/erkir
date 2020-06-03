@@ -37,7 +37,7 @@ namespace erkir
 namespace spherical
 {
 
-/// Normalise angle to -180..+180°
+/// Normalise angle to -180..+180Â°
 static double normalizeAngle(double degrees)
 {
   return fmod(degrees + 540.0, 360.0) - 180.0;
@@ -89,7 +89,7 @@ double Point::bearingTo(const Point &point) const
 
 double Point::finalBearingTo(const Point &point) const
 {
-  // Get initial bearing from destination point to this point & reverse it by adding 180°
+  // Get initial bearing from destination point to this point & reverse it by adding 180Â°
   return fmod(point.bearingTo(*this) + 180.0, 360.0);
 }
 
@@ -112,7 +112,7 @@ Point Point::midpointTo(const Point &point) const
   auto lambda3 = lambda1 + std::atan2(By, std::cos(phi1) + Bx);
 
   return Point(Coordinate::toDegrees(phi3),
-               normalizeAngle(Coordinate::toDegrees(lambda3))); // normalise to -180..+180°
+               normalizeAngle(Coordinate::toDegrees(lambda3))); // normalise to -180..+180Â°
 }
 
 Point Point::intermediatePointTo(const Point &point, double fraction) const
@@ -148,7 +148,7 @@ Point Point::intermediatePointTo(const Point &point, double fraction) const
   auto lambda3 = std::atan2(y, x);
 
   return Point(Coordinate::toDegrees(phi3),
-               fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180.0); // normalise lon to -180..+180°
+               fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180.0); // normalise lon to -180..+180Â°
 }
 
 Point Point::destinationPoint(double distance, double bearing, double radius) const
@@ -175,7 +175,7 @@ Point Point::destinationPoint(double distance, double bearing, double radius) co
   auto lambda2 = lambda1 + std::atan2(y, x);
 
   return Point(Coordinate::toDegrees(phi2),
-               normalizeAngle(Coordinate::toDegrees(lambda2))); // normalise to -180..+180°
+               normalizeAngle(Coordinate::toDegrees(lambda2))); // normalise to -180..+180Â°
 }
 
 Point Point::intersection(const Point &p1, double brng1, const Point &p2, double brng2)
@@ -224,7 +224,7 @@ Point Point::intersection(const Point &p1, double brng1, const Point &p2, double
   auto lambda3 = lambda1 + deltaLambda13;
 
   return Point(Coordinate::toDegrees(phi3),
-               normalizeAngle(Coordinate::toDegrees(lambda3))); // normalise to -180..+180°
+               normalizeAngle(Coordinate::toDegrees(lambda3))); // normalise to -180..+180Â°
 }
 
 double Point::crossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
@@ -278,7 +278,7 @@ double Point::rhumbDistanceTo(const Point &point, double radius) const
   auto deltaPhi = phi2 - phi1;
   auto deltaLambda = std::abs(point.longitude().radians() - longitude().radians());
 
-  // If dLon over 180° take shorter rhumb line across the anti-meridian:
+  // If dLon over 180Â° take shorter rhumb line across the anti-meridian:
   if (deltaLambda > Coordinate::pi()) {
     deltaLambda -= 2.0 * Coordinate::pi();
   }
@@ -299,7 +299,7 @@ double Point::rhumbBearingTo(const Point &point) const
   auto phi1 = latitude().radians();
   auto phi2 = point.latitude().radians();
   auto deltaLambda = point.longitude().radians() - longitude().radians();
-  // If dLon over 180° take shorter rhumb line across the anti-meridian:
+  // If dLon over 180Â° take shorter rhumb line across the anti-meridian:
   if (deltaLambda > Coordinate::pi()) {
     deltaLambda -= 2.0 * Coordinate::pi();
   }
@@ -339,7 +339,7 @@ Point Point::rhumbDestinationPoint(double distance, double bearing, double radiu
   auto lambda2 = lambda1 + deltaLambda;
 
   return Point(Coordinate::toDegrees(phi2),
-               normalizeAngle(Coordinate::toDegrees(lambda2))); // normalise to -180..+180°
+               normalizeAngle(Coordinate::toDegrees(lambda2))); // normalise to -180..+180Â°
 }
 
 Point Point::rhumbMidpointTo(const Point &point) const
@@ -365,13 +365,13 @@ Point Point::rhumbMidpointTo(const Point &point) const
   }
 
   return Point(Coordinate::toDegrees(phi3),
-               normalizeAngle(Coordinate::toDegrees(lambda3))); // normalise to -180..+180°
+               normalizeAngle(Coordinate::toDegrees(lambda3))); // normalise to -180..+180Â°
 }
 
 double Point::areaOf(const std::vector<Point> &polygon, double radius)
 {
   // Uses method due to Karney: osgeo-org.1560.x6.nabble.com/Area-of-a-spherical-polygon-td3841625.html;
-  // For each edge of the polygon, tan(E/2) = tan(deltaLambda/2)·(tan(phi1/2) + tan(phi2/2)) / (1 + tan(phi1/2)·tan(phi2/2))
+  // For each edge of the polygon, tan(E/2) = tan(deltaLambda/2)Â·(tan(phi1/2) + tan(phi2/2)) / (1 + tan(phi1/2)Â·tan(phi2/2))
   // where E is the spherical excess of the trapezium obtained by extending the edge to the equator
 
   if (polygon.size() < 3)
@@ -398,8 +398,8 @@ double Point::areaOf(const std::vector<Point> &polygon, double radius)
     S += E;
   }
 
-  // Whether polygon encloses pole: sum of course deltas around pole is 0° rather than
-  // normal ±360°: blog.element84.com/determining-if-a-spherical-polygon-contains-a-pole.html
+  // Whether polygon encloses pole: sum of course deltas around pole is 0Â° rather than
+  // normal Â±360Â°: blog.element84.com/determining-if-a-spherical-polygon-contains-a-pole.html
   // TODO: any better test than this?
   auto sigmaDelta = 0.0;
   auto prevBrng = tmpPolygon[0].bearingTo(tmpPolygon[1]);
@@ -415,7 +415,7 @@ double Point::areaOf(const std::vector<Point> &polygon, double radius)
   sigmaDelta += normalizeAngle(initBrng - prevBrng);
 
   // TODO: fix (intermittent) edge crossing pole - eg (85,90), (85,0), (85,-90)
-  if (std::abs(sigmaDelta) < 90.0) { // 0°-ish
+  if (std::abs(sigmaDelta) < 90.0) { // 0Â°-ish
     S = std::abs(S) - 2.0 * Coordinate::pi();
   }
 

@@ -1,7 +1,7 @@
-/**********************************************************************************
+﻿/**********************************************************************************
 *  MIT License                                                                    *
 *                                                                                 *
-*  Copyright (c) 2018-2020 Vahan Aghajanyan <vahancho@gmail.com>                  *
+*  Copyright (c) 2020 Vahan Aghajanyan <vahancho@gmail.com>                       *
 *                                                                                 *
 *  Geodesy tools for conversions between (historical) datums                      *
 *  (c) Chris Veness 2005-2019                                                     *
@@ -27,69 +27,59 @@
 *  SOFTWARE.                                                                      *
 ***********************************************************************************/
 
-#ifndef ELLIPSOIDAL_POINT_H
-#define ELLIPSOIDAL_POINT_H
+#ifndef CARTESIAN_POINT_H
+#define CARTESIAN_POINT_H
 
 #include <memory>
-
-#include "point.h"
+#include "vector3d.h"
 #include "datum.h"
-
 
 namespace erkir
 {
 
-namespace cartesian
+namespace ellipsoidal
 {
   class Point;
 }
 
-namespace ellipsoidal
+namespace cartesian
 {
 
-//! Implements geodetic point based on ellipsoidal earth model.
-/*!
-  Includes ellipsoid parameters and datums for different coordinate systems, and methods for
-  converting between them and to Cartesian coordinates.
-*/
-class Point : public erkir::Point
+/// ECEF (earth-centered earth-fixed) geocentric Cartesian coordinates.
+class Point : public Vector3d
 {
 public:
-  //! Constructs a point with the given \p latitude, \p longitude \p height above ellipsoid in metres and \p datum.
-  Point(const Latitude &latitude, const Longitude &longitude, double height = 0.0,
-        const Datum &datum = {Datum::Type::WGS84});
-
-  /// Return the datum.
-  Datum datum() const;
-
-  /// Returns height above the ellipsoid.
-  double height() const;
-
-  /// Converts 'this' point's coordinate system to new one.
+  /// Creates Cartesian coordinate representing ECEF (earth-centric earth-fixed) point.
   /*!
-    \param   toDatum Datum this coordinate is to be converted to.
-    \returns Reference to this point converted to new datum.
+    \param x X coordinate in metres (=> 0°N,0°E).
+    \param y Y coordinate in metres (=> 0°N,90°E).
+    \param z Z coordinate in metres (=> 90°N).
+
+    \example auto coord = Cartesian(3980581.210, -111.159, 4966824.522);
+  */
+  Point(double x, double y, double z, const ellipsoidal::Datum &datum = {ellipsoidal::Datum::Type::WGS84});
+
+  /// Converts 'this' (geocentric) cartesian (x/y/z) coordinate to (geodetic) latitude/longitude
+  /// point( based on the same datum, or WGS84 if unset ).
+  /*!
+    \returns {LatLon} Latitude/longitude point defined by cartesian coordinates.
 
     \example
-      Point pWGS84(51.47788, -0.00147, Datum::Type::WGS84);
-      auto pOSGB = pWGS84.toDatum(Datum::Type::OSGB36); // 51.4773°N, 000.0001°E
+      auto c = cartesian::Point{4027893.924, 307041.993, 4919474.294};
+      auto p = c.toGeoPoint(); // 50.7978°N, 004.3592°E
   */
-  Point &toDatum(Datum::Type toDatum);
+  std::unique_ptr<ellipsoidal::Point> toGeoPoint() const;
 
-  /// Converts 'this' point from (geodetic) coordinates to (geocentric) Cartesian (x/y/z) coordinates.
-  /*!
-    \returns Cartesian point equivalent to lat/lon point, with x, y, z in metres from earth centre.
-  */
-  std::unique_ptr<cartesian::Point> toCartesianPoint();
+  /// Converts this point to the \p targetDatum.
+  Point &toDatum(ellipsoidal::Datum::Type targetDatum);
 
 private:
-  double m_height{ 0.0 };
-  Datum m_datum;
-};
+  ellipsoidal::Datum m_datum;
+ };
 
-} // ellipsoidal
+} // cartesian
 
 } // erkir
 
-#endif // ELLIPSOIDAL_POINT_H
+#endif // CARTESIAN_POINT_H
 

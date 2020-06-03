@@ -131,7 +131,7 @@ Vector3d Vector3d::rotateAround(const Vector3d &axis, double theta) const
     }
   };
 
-  // Multiply q × p
+  // Multiply q Ð§ p
   auto qp = std::vector<double>(3, 0.0);
   for (auto i = 0; i < 3; i++) {
     for (auto j = 0; j < 3; j++) {
