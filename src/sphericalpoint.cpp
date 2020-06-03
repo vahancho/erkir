@@ -388,7 +388,7 @@ double Point::areaOf(const std::vector<Point> &polygon, double radius)
   }
 
   auto S = 0.0; // spherical excess in steradians
-  for (auto v = 0; v < tmpPolygon.size() - 1; v++) {
+  for (size_t v = 0; v < tmpPolygon.size() - 1; v++) {
     auto phi1 = tmpPolygon[v].latitude().radians();
     auto phi2 = tmpPolygon[v + 1].latitude().radians();
     auto deltaLambda = tmpPolygon[v + 1].longitude().radians() -
@@ -403,7 +403,7 @@ double Point::areaOf(const std::vector<Point> &polygon, double radius)
   // TODO: any better test than this?
   auto sigmaDelta = 0.0;
   auto prevBrng = tmpPolygon[0].bearingTo(tmpPolygon[1]);
-  for (auto v = 0; v < tmpPolygon.size() - 1; v++) {
+  for (size_t v = 0; v < tmpPolygon.size() - 1; v++) {
     auto initBrng = tmpPolygon[v].bearingTo(tmpPolygon[v + 1]);
     auto finalBrng = tmpPolygon[v].finalBearingTo(tmpPolygon[v + 1]);
     sigmaDelta += normalizeAngle(initBrng - prevBrng);

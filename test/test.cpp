@@ -32,6 +32,8 @@
 #include "point.cpp"
 #include "coordinate.cpp"
 #include "vector3d.cpp"
+#include "datum.cpp"
+#include "cartesianpoint.cpp"
 
 using namespace erkir;
 
