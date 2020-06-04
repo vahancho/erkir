@@ -6,10 +6,8 @@ compiler:
 before_install:
   - pip install --user cpp-coveralls
 script:
-  #- g++ -std=c++11 -coverage -Isrc -Iinclude test/test.cpp -o test_app
-  #- ./test_app
-  -cmake -DCOVERAGE=1 .
-  -cmake --build .
-  -./erkir_test
+  - cmake -DCOVERAGE=1 .
+  - cmake --build .
+  - ./erkir_test
 after_success:
   - coveralls --verbose --exclude test
