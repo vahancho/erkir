@@ -1,20 +1,13 @@
 dist: trusty
 sudo: require
 language: cpp
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - cmake
 compiler:
   - gcc
 before_install:
   - pip install --user cpp-coveralls
 script:
-  - cmake -DCOVERAGE=1 .
-  - cmake --build .
-  - ./erkir_test
+    - g++ -std=c++11 -coverage -Isrc -Iinclude test/test.cpp -o test_app
+    - ./test_app
 after_success:
   - coveralls --verbose --exclude test
+
