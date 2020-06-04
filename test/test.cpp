@@ -24,6 +24,7 @@
 
 #include <random>
 #include <chrono>
+#include <iostream>
 
 #include "sphericalpoint.h"
 #include "sphericalpoint.cpp"
@@ -53,8 +54,7 @@ static std::string boolToString(bool value)
 static bool verifyDouble(double value, double expected, const std::string &location)
 {
   static const double epsilon = 0.001;
-  if (std::abs(value - expected) > epsilon)
-  {
+  if (std::abs(value - expected) > epsilon) {
     fprintf(stderr, "%s VALUE ERROR: actual=%.3f, expected=%.3f\n",
             location.c_str(), value, expected);
     ++s_failed;
@@ -67,8 +67,7 @@ static bool verifyDouble(double value, double expected, const std::string &locat
 static bool verifyPoint(const Point &point, const Point &expectedPoint,
                         const std::string &location)
 {
-  if (point.isValid() != expectedPoint.isValid())
-  {
+  if (point.isValid() != expectedPoint.isValid()) {
     fprintf(stderr, "%s POINT ERROR: isValid: %s, but expected: %s\n",
             location.c_str(),
             boolToString(point.isValid()).c_str(), boolToString(expectedPoint.isValid()).c_str());
@@ -76,8 +75,7 @@ static bool verifyPoint(const Point &point, const Point &expectedPoint,
     return false;
   }
 
-  if (point != expectedPoint)
-  {
+  if (point != expectedPoint) {
     fprintf(stderr, "%s POINT ERROR: actual=(%.3f, %.3f), expected=(%.3f, %.3f)\n",
             location.c_str(),
             point.latitude().degrees(), point.longitude().degrees(),
@@ -97,8 +95,7 @@ static std::vector<spherical::Point> randomPoints(int count)
   std::uniform_real_distribution<double> longitudeDistr{ -180.0, 180.0 };
 
   std::vector<spherical::Point> points;
-  for (int i = 0; i < count; ++i)
-  {
+  for (int i = 0; i < count; ++i) {
     points.emplace_back(latitudeDistr(gen), longitudeDistr(gen));
   }
 
@@ -107,10 +104,10 @@ static std::vector<spherical::Point> randomPoints(int count)
 
 static void reportTime(std::chrono::time_point<std::chrono::high_resolution_clock> start,
                        std::chrono::time_point<std::chrono::high_resolution_clock> end,
-                       int count, const char *title)
+                       int count, const std::string &title)
 {
   auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-  printf("%s: %lld nanoseconds per calculation\n", title, duration / count);
+  std::cout << title << ": " << duration / count << " nanoseconds per calculation\n";
 }
 
 int main()
@@ -298,12 +295,12 @@ int main()
 
   //////////////////////////////////////////////////////////////////////////////
 
-  printf("Total tests: %d, passed: %d, failed: %d\n", s_passed + s_failed, s_passed, s_failed);
+  std::cout << "Total tests: " << s_passed + s_failed << ", passed: " << s_passed << ", failed: " << s_failed << '\n';
 
   //////////////////////////////////////////////////////////////////////////////
 
   // Some performance tests.
-  printf("\nSome performance tests:\n\n");
+  std::cout << "\nSome performance tests:\n\n";
 
   const int count = 5000;
   auto points1 = randomPoints(count);
@@ -311,8 +308,7 @@ int main()
 
   // Distance (haversine).
   auto start = std::chrono::high_resolution_clock::now();
-  for (int i = 0; i < count; ++i)
-  {
+  for (int i = 0; i < count; ++i) {
     points1[i].distanceTo(points2[i]);
   }
   auto end = std::chrono::high_resolution_clock::now();
@@ -320,8 +316,7 @@ int main()
 
   // Initial bearing.
   start = std::chrono::high_resolution_clock::now();
-  for (int i = 0; i < count; ++i)
-  {
+  for (int i = 0; i < count; ++i) {
     points1[i].bearingTo(points2[i]);
   }
   end = std::chrono::high_resolution_clock::now();
@@ -329,8 +324,7 @@ int main()
 
   // Destination point.
   start = std::chrono::high_resolution_clock::now();
-  for (int i = 0; i < count; ++i)
-  {
+  for (int i = 0; i < count; ++i) {
     points1[i].destinationPoint(7794.0, 300.7);
   }
   end = std::chrono::high_resolution_clock::now();
