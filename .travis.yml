@@ -1,6 +1,12 @@
 dist: trusty
 sudo: require
 language: cpp
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+
 compiler:
   - gcc
 before_install:
