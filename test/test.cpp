@@ -107,7 +107,7 @@ static void reportTime(std::chrono::time_point<std::chrono::high_resolution_cloc
                        int count, const std::string &title)
 {
   auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-  std::cout << title << ": " << duration / count << " nanoseconds per calculation\n";
+  std::cout << title.c_str() << ": " << duration / count << " nanoseconds per calculation\n";
 }
 
 int main()
