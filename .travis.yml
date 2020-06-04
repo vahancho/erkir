@@ -6,7 +6,8 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-
+    packages:
+      - cmake
 compiler:
   - gcc
 before_install:
