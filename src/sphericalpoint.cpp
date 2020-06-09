@@ -312,7 +312,7 @@ double Point::rhumbBearingTo(const Point &point) const
 
   auto theta = std::atan2(deltaLambda, deltaPsi);
 
-  return fmod(Coordinate::toDegrees(theta) + 360.0, 360.0);
+  return Coordinate::wrap360(Coordinate::toDegrees(theta));
 }
 
 Point Point::rhumbDestinationPoint(double distance, double bearing, double radius) const

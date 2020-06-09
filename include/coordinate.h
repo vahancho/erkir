@@ -49,6 +49,9 @@ public:
 
   static double pi();
 
+  /// Constrain degrees to range 0..360.0 (e.g. for bearings); -1 => 359, 361 => 1.
+  static double wrap360(double degrees);
+
 private:
   double m_degrees;
 };

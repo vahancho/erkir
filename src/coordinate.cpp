@@ -64,6 +64,11 @@ double Coordinate::pi()
   return M_PI;
 }
 
+double Coordinate::wrap360(double degrees)
+{
+  return fmod(degrees + 360.0, 360.0);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 Latitude::Latitude(double degree)
