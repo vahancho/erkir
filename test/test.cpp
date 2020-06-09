@@ -87,6 +87,14 @@ static bool verifyPoint(const Point &point, const Point &expectedPoint,
   return true;
 }
 
+static bool verifyVector(const Vector3d &vector, double x, double y, double z,
+                         const std::string &location)
+{
+  return verifyDouble(vector.x(), x, location) &&
+         verifyDouble(vector.y(), y, location) &&
+         verifyDouble(vector.z(), z, location);
+}
+
 static std::vector<spherical::Point> randomPoints(int count)
 {
   std::random_device rd;
@@ -202,7 +210,81 @@ int main()
     verifyDouble(6182469722.731, spherical::Point::areaOf(polygon), LOCATION); // 6.18e9 mІ
   }
 
+  // Wrap 360
+  {
+    verifyDouble(Coordinate::wrap360(-1.0), 359.0, LOCATION);
+    verifyDouble(Coordinate::wrap360(361.0), 1.0, LOCATION);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
+
+  // Ellipsoidal points
+
+  // Vincenty destination point.
+  {
+    auto p1 = ellipsoidal::Point(-37.95103, 144.42487);
+    auto p2 = p1.destinationPoint(54972.271, 306.86816); // 37.6528°S, 143.9265°E
+    verifyPoint(p2, {-37.6528, 143.9265}, LOCATION);
+  }
+
+  // Vincenty distance
+  {
+    auto p1 = ellipsoidal::Point(50.06632, -5.71475);
+    auto p2 = ellipsoidal::Point(58.64402, -3.07009);
+    auto distance = p1.distanceTo(p2); // 969,954.166 m
+    verifyDouble(distance, 969954.169, LOCATION);
+  }
+
+  // Initial bearing to
+  {
+    auto p1 = ellipsoidal::Point(50.06632, -5.71475);
+    auto p2 = ellipsoidal::Point(58.64402, -3.07009);
+    auto b1 = p1.initialBearingTo(p2); // 9.1419°
+    verifyDouble(b1, 9.1419, LOCATION);
+  }
+
+  // Final bearing to
+  {
+    auto p1 = ellipsoidal::Point(50.06632, -5.71475);
+    auto p2 = ellipsoidal::Point(58.64402, -3.07009);
+    auto b2 = p1.finalBearingTo(p2); // 11.2972°
+    verifyDouble(b2, 11.2972, LOCATION);
+  }
+
+  // Final bearing on
+  {
+    auto p1 = ellipsoidal::Point(-37.95103, 144.42487);
+    auto b2 = p1.finalBearingOn(54972.271, 306.86816); // 307.1736°
+    verifyDouble(b2, 307.1736, LOCATION);
+  }
+
+  // Antipodal
+  {
+    static const auto circMeridional = 40007862.918;
+
+    verifyDouble(ellipsoidal::Point{0.0, 0.0}.distanceTo({0.5, 179.5}), 19936287.420, LOCATION); // TODO: diverges from other results a little bit.
+    verifyDouble(ellipsoidal::Point{0.0, 0.0}.distanceTo({0.5, 179.7}), std::numeric_limits<double>::quiet_NaN(), LOCATION);
+    verifyDouble(ellipsoidal::Point{0.0, 0.0}.initialBearingTo({0.5, 179.7}), std::numeric_limits<double>::quiet_NaN(), LOCATION);
+    verifyDouble(ellipsoidal::Point{0.0, 0.0}.finalBearingTo({0.5, 179.7}), std::numeric_limits<double>::quiet_NaN(), LOCATION);
+    verifyDouble(ellipsoidal::Point{0.0, 0.0}.distanceTo({0.0, 180.0}), circMeridional / 2.0, LOCATION);
+    verifyDouble(ellipsoidal::Point{0.0, 0.0}.initialBearingTo({0.0, 180.0}), 0.0, LOCATION);
+    verifyDouble(ellipsoidal::Point{90.0, 0.0}.distanceTo({-90.0, 0.0}), circMeridional / 2.0, LOCATION);
+    verifyDouble(ellipsoidal::Point{90.0, 0.0}.initialBearingTo({-90.0,0.0 }), 0.0, LOCATION);
+  }
+
+  // Coincident
+  {
+    const auto p = ellipsoidal::Point(50.06632, -5.71475);
+    verifyDouble(p.distanceTo(p), 0.0, LOCATION);
+    verifyDouble(p.initialBearingTo(p), std::numeric_limits<double>::quiet_NaN(), LOCATION);
+    verifyDouble(p.finalBearingTo(p), std::numeric_limits<double>::quiet_NaN(), LOCATION);
+
+    // Inverse equatorial distance
+    verifyDouble(ellipsoidal::Point{0.0, 0.0}.distanceTo({0.0, 1.0}), 111319.491, LOCATION);
+
+    // Direct coincident destination
+    verifyPoint(p.destinationPoint(0.0, 0.0), p, LOCATION);
+  }
 
   // Datum conversion.
   {
@@ -257,25 +339,57 @@ int main()
     Vector3d v1{ 1.0, 0.0, 0.0 };
     Vector3d v2{ 0.0, 1.0, 0.0 };
     auto v3 = v1.cross(v2);
-    verifyDouble(v3.x(), 0.0, LOCATION);
-    verifyDouble(v3.y(), 0.0, LOCATION);
-    verifyDouble(v3.z(), 1.0, LOCATION);
+    verifyVector(v3, 0.0, 0.0, 1.0, LOCATION);
   }
   {
     Vector3d v1{ 3.0, 0.0, 0.0 };
     Vector3d v2{ 0.0, 4.0, 0.0 };
     auto v3 = v1.cross(v2);
-    verifyDouble(v3.x(), 0.0, LOCATION);
-    verifyDouble(v3.y(), 0.0, LOCATION);
-    verifyDouble(v3.z(), 12.0, LOCATION);
+    verifyVector(v3, 0.0, 0.0, 12.0, LOCATION);
   }
   {
     Vector3d v1{ 1.0, 2.0, 3.0 };
     Vector3d v2{ 4.0, 5.0, 6.0 };
     auto v3 = v1.cross(v2);
-    verifyDouble(v3.x(), -3.0, LOCATION);
-    verifyDouble(v3.y(), 6.0, LOCATION);
-    verifyDouble(v3.z(), -3.0, LOCATION);
+    verifyVector(v3, -3.0, 6.0, -3.0, LOCATION);
+  }
+
+  // Other vector tests
+  {
+    const auto v123 = Vector3d(1, 2, 3);
+    const auto v321 = Vector3d(3, 2, 1);
+
+    auto plus = v123 + v321;
+    verifyVector(plus, 4.0, 4.0, 4.0, LOCATION);
+
+    auto minus = v123 - v321;
+    verifyVector(minus, -2.0, 0.0, 2.0, LOCATION);
+
+    auto times = v123 * 2.0;
+    verifyVector(times, 2.0, 4.0, 6.0, LOCATION);
+
+    auto divided = v123 / 2.0;
+    verifyVector(divided, 0.5, 1.0, 1.5, LOCATION);
+
+    verifyDouble(v123.dot(v321), 10.0, LOCATION);
+    verifyDouble(v123.length(), 3.7416573867739413, LOCATION);
+
+    auto cross = v123.cross(v321);
+    verifyVector(cross, -4.0, 8.0, -4.0, LOCATION);
+
+    auto negate = -v123;
+    verifyVector(negate, -1.0, -2.0, -3.0, LOCATION);
+
+    auto unitV = v123.unit();
+    verifyVector(unitV, 0.267, 0.535, 0.802, LOCATION);
+
+    verifyDouble(v123.angleTo(v321), Coordinate::toRadians(44.415), LOCATION);
+    verifyDouble(v123.angleTo(v321, v123.cross(v321)), Coordinate::toRadians(44.415), LOCATION);
+    verifyDouble(v123.angleTo(v321, v321.cross(v123)), Coordinate::toRadians(-44.415), LOCATION);
+    verifyDouble(v123.angleTo(v321, v123), Coordinate::toRadians(44.415), LOCATION);
+
+    auto rotated = v123.rotateAround({0.0, 0.0, 1.0}, 90.0);
+    verifyVector(rotated, -0.535, 0.267, 0.802, LOCATION);
   }
 
   // Cartesian points
