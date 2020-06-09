@@ -82,7 +82,110 @@ public:
   */
   std::unique_ptr<cartesian::Point> toCartesianPoint();
 
+  /*!
+    Returns the distance between 'this' point and destination point along a geodesic on the
+    surface of the ellipsoid, using Vincenty inverse solution.
+
+    \param   point Latitude/longitude of destination point.
+    \returns Distance in metres between points or NaN if failed to converge.
+    \example
+      auto p1 = Point(50.06632, -5.71475);
+      auto p2 = Point(58.64402, -3.07009);
+      auto d = p1.distanceTo(p2); // 969,954.166 m
+  */
+  double distanceTo(const Point &point) const;
+
+  /*!
+    Returns the destination point having travelled the given distance along a geodesic given by
+    initial bearing from 'this' point, using Vincenty direct solution.
+
+     \param   distance       Distance travelled along the geodesic in metres.
+     \param   initialBearing Initial bearing in degrees from north.
+     \returns Destination point.
+     \example
+      auto p1 = Point(-37.95103, 144.42487);
+      auto p2 = p1.destinationPoint(54972.271, 306.86816); // 37.6528°S, 143.9265°E
+  */
+  Point destinationPoint(double distance, double initialBearing) const;
+
+  /*!
+    Returns the initial bearing (forward azimuth) to travel along a geodesic from ‘this’ point to
+    the given point, using Vincenty inverse solution.
+
+    \param   point   Latitude/longitude of destination point.
+    \returns Initial bearing in degrees from north (0°..360°) or NaN if failed to converge.
+    \example
+      auto p1 = Point(50.06632, -5.71475);
+      auto p2 = Point(58.64402, -3.07009);
+      auto b1 = p1.initialBearingTo(p2); // 9.1419°
+  */
+  double initialBearingTo(const Point &point) const;
+
+  /*!
+    Returns the final bearing (reverse azimuth) having travelled along a geodesic from 'this'
+    point to the given point, using Vincenty inverse solution.
+
+    \param   point Latitude/longitude of destination point.
+    \returns Final bearing in degrees from north (0°..360°) or NaN if failed to converge.
+
+    \example
+      auto p1 = Point(50.06632, -5.71475);
+      auto p2 = Point(58.64402, -3.07009);
+      auto b2 = p1.finalBearingTo(p2); // 11.2972°
+  */
+  double finalBearingTo(const Point &point) const;
+
+  /*!
+    Returns the final bearing (reverse azimuth) having travelled along a geodesic given by initial
+    bearing for a given distance from 'this' point, using Vincenty direct solution.
+
+    \param   distance       Distance travelled along the geodesic in metres.
+    \param   initialBearing Initial bearing in degrees from north.
+    \returns Final bearing in degrees from north (0°..360°).
+
+    \example
+      auto p1 = Point(-37.95103, 144.42487);
+      auto b2 = p1.finalBearingOn(54972.271, 306.86816); // 307.1736°
+  */
+  double finalBearingOn(double distance, double initialBearing) const;
+
 private:
+  enum class DirectField
+  {
+    Point,
+    FinalBearing
+  };
+
+  //!Vincenty direct calculation.
+  /*!
+    Ellipsoid parameters are taken from datum of 'this' point. Height is ignored.
+
+    \param   distance Distance along bearing in metres.
+    \param   initialBearing Initial bearing in degrees from north.
+    \returns Object including point (destination point), finalBearing.
+    \throws  Formula failed to converge.
+  */
+  std::tuple<Point, double> direct(double distance, double initialBearing) const;
+
+  enum class InverseField
+  {
+    Distance,
+    InitialBearing,
+    FinalBearing
+  };
+
+  //! Vincenty inverse calculation.
+  /*!
+    Ellipsoid parameters are taken from datum of 'this' point. Height is ignored.
+
+    \param   point Latitude/longitude of destination point.
+    \returns Object including distance, initialBearing, finalBearing.
+    \throws  Invalid point.
+    \throws  Points must be on surface of ellipsoid.
+    \throws  Formula failed to converge.
+  */
+  std::tuple<double, double, double> inverse(const Point &point) const;
+
   double m_height{ 0.0 };
   Datum m_datum;
 };
