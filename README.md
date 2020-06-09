@@ -4,7 +4,6 @@
 
 [![Build Status](https://travis-ci.org/vahancho/erkir.svg?branch=master)](https://travis-ci.org/vahancho/erkir)
 [![Build status](https://ci.appveyor.com/api/projects/status/gh9v3ynrm1dt1w7t/branch/master?svg=true)](https://ci.appveyor.com/project/vahancho/erkir/branch/master)
-[![Coverage Status](https://coveralls.io/repos/github/vahancho/erkir/badge.svg)](https://coveralls.io/github/vahancho/erkir)
 [![codecov](https://codecov.io/gh/vahancho/erkir/branch/master/graph/badge.svg)](https://codecov.io/gh/vahancho/erkir)
 
 ### Prerequisites
