@@ -28,6 +28,7 @@
 #include <vector>
 #include <cmath>
 #include "vector3d.h"
+#include "coordinate.h"
 
 namespace erkir
 {
@@ -108,8 +109,10 @@ Vector3d Vector3d::rotateAround(const Vector3d &axis, double theta) const
   auto p1 = unit();
   std::vector<double> p = { p1.x(), p1.y(), p1.z() }; // the point being rotated
   auto a = axis.unit(); // the axis being rotated around
-  auto s = std::sin(theta);
-  auto c = std::cos(theta);
+
+  const auto thetaRad = Coordinate::toRadians(theta);
+  const auto s = std::sin(thetaRad);
+  const auto c = std::cos(thetaRad);
 
   // Quaternion-derived rotation matrix
   std::vector<std::vector<double>> q =
