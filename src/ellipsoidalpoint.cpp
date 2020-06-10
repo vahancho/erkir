@@ -142,7 +142,7 @@ double Point::finalBearingOn(double distance, double initialBearing) const
 std::tuple<Point, double> Point::direct(double distance, double initialBearing) const
 {
   if (m_height != 0.0) {
-    throw std::exception("Point must be on the surface of the ellipsoid");
+    throw std::domain_error("Point must be on the surface of the ellipsoid");
   }
 
   const auto phi1 = latitude().radians();
@@ -189,7 +189,7 @@ std::tuple<Point, double> Point::direct(double distance, double initialBearing) 
   } while ( std::abs(sigma - sigmaPrim) > 1e-12 && ++iterations < 100 );
 
   if ( iterations >= 100 ) {
-    throw std::exception("Vincenty formula failed to converge"); // not possible?
+    throw std::domain_error("Vincenty formula failed to converge"); // not possible?
   }
 
   const auto x = sinU1 * sinSigma - cosU1 * cosSigma * cosAlpha1;
@@ -215,7 +215,7 @@ std::tuple<Point, double> Point::direct(double distance, double initialBearing) 
 std::tuple<double, double, double> Point::inverse(const Point &point) const
 {
   if (m_height != 0.0 || point.height() != 0.0) {
-    throw std::exception("Point must be on the surface of the ellipsoid");
+    throw std::domain_error("Point must be on the surface of the ellipsoid");
   }
 
   const auto phi1 = latitude().radians();
@@ -277,13 +277,13 @@ std::tuple<double, double, double> Point::inverse(const Point &point) const
 
     const auto iterationCheck = antipodal ? std::abs(lambda) - Coordinate::pi() : std::abs(lambda);
     if ( iterationCheck > Coordinate::pi() ) {
-      throw std::exception("lambda > pi");
+      throw std::domain_error("lambda > pi");
     }
   } while (std::abs(lambda - lambdaPrim) > 1e-12 && ++iterations < 1000);
 
 
   if (iterations >= 1000) {
-    throw std::exception("Vincenty formula failed to converge");
+    throw std::domain_error("Vincenty formula failed to converge");
   }
 
   const auto uSq = cosSqAlpha * (a * a - b * b) / (b * b);
