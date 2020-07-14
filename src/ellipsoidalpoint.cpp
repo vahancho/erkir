@@ -29,6 +29,7 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <limits>
 #include <tuple>
 
 #include "ellipsoidalpoint.h"
