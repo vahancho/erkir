@@ -1,14 +1,28 @@
 dist: trusty
 sudo: require
 language: cpp
+os: linux
 compiler:
   - gcc
-before_install:
-  - pip install --user cpp-coveralls
+addons:
+  apt:
+    packages: lcov
 script:
-    - g++ -std=c++11 -coverage -Isrc -Iinclude test/test.cpp -o test_app
-    - ./test_app
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+    - ./erkir_test
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
-  - coveralls --verbose --exclude test
+    # Create lcov report
+    # capture coverage info
+    - lcov --directory . --capture --output-file coverage.info
+    # filter out system and extra files.
+    # To also not include test code in coverage add them with full path to the patterns: '*/tests/*'
+    - lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' --output-file coverage.info
+    # output coverage data for debugging (optional)
+    - lcov --list coverage.info
+    # Uploading to CodeCov
+    # '-f' specifies file(s) to use and disables manual coverage gathering and file search which has already been done above
+    - bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
 

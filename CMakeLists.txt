@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.9)
 
 project(erkir)
 set (CMAKE_CXX_STANDARD 11)
@@ -33,3 +33,19 @@ target_include_directories(erkir_test PRIVATE src)
 
 enable_testing()
 add_test(NAME Test COMMAND erkir_test)
+
+# Coverage support.
+option(CODE_COVERAGE "Enable coverage reporting" ON)
+if (CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options(erkir INTERFACE
+    -O0        # no optimization
+    -g         # generate debug info
+    --coverage # sets all required flags
+  )
+  if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+    target_link_options(erkir INTERFACE --coverage)
+  else()
+    target_link_libraries(erkir INTERFACE --coverage)
+  endif()
+endif()

@@ -58,24 +58,46 @@ int main(int argc, char **argv)
 }
 ```
 
-### Test
+For more usage examples please refer to the unit tests at `/test/test.cpp` file.
+
+### Building and Testing
 
 There are unit tests. You can find them in the *test/* directory.
 To run them you have to build and run the test application. For doing that you must invoke the following
 commands from the terminal, assuming that compiler and environment are already configured:
 
-##### Linux (gcc)
+#### Linux (gcc)
 ```
 cd test
 g++ -std=c++11 -Isrc -Iinclude test.cpp -o test
 ./test
 ```
 
-##### Windows
+or using CMake
+
+```
+mkdir build
+cd build
+cmake ..
+make
+./erkir_test
+```
+
+#### Windows
 ```
 cd test
 cl /I..\src /I..\include /W4 /EHsc test.cpp /link /out:test.exe
 test
+```
+
+or using CMake
+
+```
+mkdir build
+cd build
+cmake .. -G "NMake Makefiles"
+nmake
+erkir_test
 ```
 
 ### Performance Tests
