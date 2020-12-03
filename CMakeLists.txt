@@ -19,6 +19,7 @@ add_library(erkir
     src/sphericalpoint.cpp
     src/vector3d.cpp
 )
+add_library(erkir::erkir ALIAS erkir)
 
 add_executable(erkir_test
     test/test.cpp
@@ -27,7 +28,7 @@ add_executable(erkir_test
 target_link_libraries(erkir_test PRIVATE erkir)
 
 # Includes
-target_include_directories(erkir      PRIVATE include)
+target_include_directories(erkir      PUBLIC  include)
 target_include_directories(erkir_test PRIVATE include)
 target_include_directories(erkir_test PRIVATE src)
 
