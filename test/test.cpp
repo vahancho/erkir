@@ -300,13 +300,13 @@ int main()
   }
   {
     ellipsoidal::Point pWGS84( 53.0, 1.0, 50.0 );
-    auto pOSGB36 = pWGS84.toDatum( ellipsoidal::Datum::Type::OSGB36 );
+    const auto &pOSGB36 = pWGS84.toDatum( ellipsoidal::Datum::Type::OSGB36 );
     verifyPoint( pOSGB36, { 52.9996, 1.0018 }, LOCATION );
     verifyDouble( pOSGB36.height(), 3.987, LOCATION );
   }
   {
     ellipsoidal::Point pWGS84( 53.0, 1.0, 50.0 );
-    auto pED50 = pWGS84.toDatum(ellipsoidal::Datum::Type::ED50);
+    const auto &pED50 = pWGS84.toDatum(ellipsoidal::Datum::Type::ED50);
     verifyPoint(pED50, {53.0008, 1.0014}, LOCATION);
     verifyDouble(pED50.height(), 2.721, LOCATION);
   }

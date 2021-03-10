@@ -47,7 +47,7 @@ Point::Point(double x, double y, double z, const ellipsoidal::Datum &datum)
 
 std::unique_ptr<ellipsoidal::Point> Point::toGeoPoint() const
 {
-  auto ellips = m_datum.ellipsoid();
+  const auto &ellips = m_datum.ellipsoid();
   auto a = ellips.m_a;
   auto b = ellips.m_b;
   auto f = ellips.m_f;

@@ -80,7 +80,7 @@ std::unique_ptr<cartesian::Point> Point::toCartesianPoint()
   auto h = m_height; // Height above ellipsoid.
 
   const auto &currentDatum = datum();
-  auto ellips = currentDatum.ellipsoid();
+  const auto &ellips = currentDatum.ellipsoid();
   auto a = ellips.m_a;
   auto f = ellips.m_f;
 
@@ -225,7 +225,7 @@ std::tuple<double, double, double> Point::inverse(const Point &point) const
   const auto lambda2 = point.longitude().radians();
 
   // Allow alternative ellipsoid to be specified
-  const auto ellipsoid = m_datum.ellipsoid();
+  const auto &ellipsoid = m_datum.ellipsoid();
   const auto a = ellipsoid.m_a;
   const auto b = ellipsoid.m_b;
   const auto f = ellipsoid.m_f;
