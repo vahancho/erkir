@@ -56,18 +56,32 @@ private:
   double m_degrees;
 };
 
+//! Implements the latitude - geographic coordinate that specifies the north–south
+//! position of a point on the Earth's surface.
 class Latitude : public Coordinate
 {
 public:
+  //! Constructs a latitude object.
+  /*!
+    \param degree Decimal degrees in the range from 0° to (+/–)90°
+    \throws std::out_of_range
+  */
   Latitude(double degree);
 };
 
+//! Implements the longitude - the measurement east or west of the prime meridian.
 class Longitude : public Coordinate
 {
 public:
+  //! Constructs a longitude object.
+  /*!
+    \param degree Decimal degrees in the range from 0° to (+/–)180°
+    \throws std::out_of_range
+  */
   Longitude(double degree);
 };
 
 }
 
 #endif // COORDINATE_H
+
