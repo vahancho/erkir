@@ -25,11 +25,13 @@
 #ifndef COORDINATE_H
 #define COORDINATE_H
 
+#include "export.h"
+
 namespace erkir
 {
 
 //! Implements the geographical coordinate abstraction.
-class Coordinate
+class ERKIR_EXPORT Coordinate
 {
 public:
   //! Constructs a coordinate by the given decimal degrees.
@@ -58,7 +60,7 @@ private:
 
 //! Implements the latitude - geographic coordinate that specifies the north–south
 //! position of a point on the Earth's surface.
-class Latitude : public Coordinate
+class ERKIR_EXPORT Latitude : public Coordinate
 {
 public:
   //! Constructs a latitude object.
@@ -70,7 +72,7 @@ public:
 };
 
 //! Implements the longitude - the measurement east or west of the prime meridian.
-class Longitude : public Coordinate
+class ERKIR_EXPORT Longitude : public Coordinate
 {
 public:
   //! Constructs a longitude object.

@@ -30,6 +30,8 @@
 #ifndef DATUM_H
 #define DATUM_H
 
+#include "export.h"
+
 namespace erkir
 {
 
@@ -47,7 +49,7 @@ namespace ellipsoidal
   accurate to better than ±1 metre. No transformation should be assumed to be accurate to better
   than a meter; for many datums somewhat less.
 */
-class Datum
+class ERKIR_EXPORT Datum
 {
 public:
   enum class Type

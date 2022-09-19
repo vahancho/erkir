@@ -25,14 +25,16 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include <vector>
 #include "coordinate.h"
+#include "export.h"
+
+#include <vector>
 
 namespace erkir
 {
 
 /// Base class for all types of geodetic points.
-class Point
+class ERKIR_EXPORT Point
 {
 public:
   //! Constructs an invalid point object.

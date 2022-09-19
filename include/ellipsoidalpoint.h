@@ -52,7 +52,7 @@ namespace ellipsoidal
   Includes ellipsoid parameters and datums for different coordinate systems, and methods for
   converting between them and to Cartesian coordinates.
 */
-class Point : public erkir::Point
+class ERKIR_EXPORT Point : public erkir::Point
 {
 public:
   //! Constructs a point with the given \p latitude, \p longitude \p height above ellipsoid in metres and \p datum.

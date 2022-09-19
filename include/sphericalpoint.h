@@ -29,8 +29,8 @@
 #ifndef SPHERICAL_POINT_H
 #define SPHERICAL_POINT_H
 
-#include <vector>
 #include "point.h"
+#include <vector>
 
 namespace erkir
 {
@@ -43,7 +43,7 @@ namespace spherical
   All formulae in this class are for calculations on the basis of a spherical earth
   (ignoring ellipsoidal effects).
 */
-class Point : public erkir::Point
+class ERKIR_EXPORT Point : public erkir::Point
 {
 public:
   //! Constructs an invalid point object.

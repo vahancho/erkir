@@ -30,9 +30,10 @@
 #ifndef CARTESIAN_POINT_H
 #define CARTESIAN_POINT_H
 
-#include <memory>
-#include "vector3d.h"
 #include "datum.h"
+#include "vector3d.h"
+
+#include <memory>
 
 namespace erkir
 {
@@ -46,7 +47,7 @@ namespace cartesian
 {
 
 /// ECEF (earth-centered earth-fixed) geocentric Cartesian coordinates.
-class Point : public Vector3d
+class ERKIR_EXPORT Point : public Vector3d
 {
 public:
   /// Creates Cartesian coordinate representing ECEF (earth-centric earth-fixed) point.
