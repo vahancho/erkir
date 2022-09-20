@@ -53,25 +53,26 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_subdirectory(src)
-
 if (ENABLE_TESTING)
-
     # Coverage support.
     option(CODE_COVERAGE "Enable coverage reporting" ON)
     if (CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         # Add required flags (GCC & LLVM/Clang)
-	add_compile_options(-O0        # no optimization
-			    -g         # generate debug info
-			    --coverage # sets all required flags
-	)
-	if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-	    add_link_options(--coverage)
-	else()
-	    link_libraries(erkir unittest PRIVATE --coverage)
-	endif()
+	    add_compile_options(-O0        # no optimization
+                            -g         # generate debug info
+			                --coverage # sets all required flags
+	    )
+	    if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+	        add_link_options(--coverage)
+	    else()
+	        link_libraries(--coverage)
+	    endif()
     endif()
+endif()
 
+add_subdirectory(src)
+
+if (ENABLE_TESTING)
     enable_testing()
     include(Dart)
 
