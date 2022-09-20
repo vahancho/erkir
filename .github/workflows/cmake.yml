@@ -26,7 +26,7 @@ jobs:
     - name: Configure CMake
       if: matrix.os != 'windows-latest'
       working-directory: ${{github.workspace}}
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x64
 
     - name: Build
       if: matrix.os != 'windows-latest'
