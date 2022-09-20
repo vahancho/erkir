@@ -1,16 +1,16 @@
-add_executable(unittest
-    test.cpp
-)
+set (TARGET unittest)
 
-target_link_libraries(unittest PRIVATE erkir)
+add_executable(${TARGET} test.cpp)
 
-add_test(NAME unittests COMMAND unittest)
+target_link_libraries(${TARGET} PRIVATE erkir)
+
+add_test(NAME unittests COMMAND ${TARGET})
 
 # Coverage support.
 option(CODE_COVERAGE "Enable coverage reporting" ON)
 if (CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     # Add required flags (GCC & LLVM/Clang)
-    target_compile_options(polytest PUBLIC
+    target_compile_options(${TARGET} PUBLIC
         -O0        # no optimization
         -g         # generate debug info
         --coverage # sets all required flags
