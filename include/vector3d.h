@@ -28,6 +28,8 @@
 #ifndef VECTOR3D_H
 #define VECTOR3D_H
 
+#include "export.h"
+
 namespace erkir
 {
 
@@ -43,7 +45,7 @@ namespace erkir
   Functions return vectors as return results, so that operations can be chained.
   \example auto v = v1.cross(v2).dot(v3) // equivalent to v1 × v2 . v3
 */
-class Vector3d
+class ERKIR_EXPORT Vector3d
 {
 public:
   /// Creates an invalid 3-d vector.

@@ -27,14 +27,9 @@
 #include <iostream>
 
 #include "sphericalpoint.h"
-#include "sphericalpoint.cpp"
 #include "ellipsoidalpoint.h"
-#include "ellipsoidalpoint.cpp"
-#include "point.cpp"
-#include "coordinate.cpp"
-#include "vector3d.cpp"
-#include "datum.cpp"
-#include "cartesianpoint.cpp"
+#include "cartesianpoint.h"
+#include "vector3d.h"
 
 using namespace erkir;
 

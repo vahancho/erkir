@@ -1,0 +1,75 @@
+name: Test (CMake)
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Configure CMake
+      if: matrix.os != 'windows-latest'
+      working-directory: ${{github.workspace}}
+      run: cmake -B build_x86 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x86
+      run: cmake -B build_x64 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x64
+
+    - name: Build
+      if: matrix.os != 'windows-latest'
+      # Build your program with the given configuration
+      run: cmake --build build_x86 --config ${{env.BUILD_TYPE}}
+      run: cmake --build build_x64 --config ${{env.BUILD_TYPE}}
+
+    # Windows only
+    - name: Configure CMake (Windows)
+      if: matrix.os == 'windows-latest'
+      working-directory: ${{github.workspace}}
+      shell: cmd
+      run: |
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
+        cmake -B build_x86 -DENABLE_TESTING=True -A Win32
+        cmake -B build_x64 -DENABLE_TESTING=True -A x64
+
+    # Windows only
+    - name: Build (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: cmd
+      # Build your program with the given configuration
+      run: |
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
+        cmake --build build_x86 --config ${{env.BUILD_TYPE}}
+        cmake --build build_x64 --config ${{env.BUILD_TYPE}}
+
+    - name: Test_x86
+      working-directory: ${{github.workspace}}/build_x86
+      # Execute tests defined by the CMake configuration.
+      run: ctest -C ${{env.BUILD_TYPE}} --verbose
+
+    - name: Test_x64
+      working-directory: ${{github.workspace}}/build_x64
+      # Execute tests defined by the CMake configuration.
+      run: ctest -C ${{env.BUILD_TYPE}} --verbose
+
+    # Upload coverage report only for Linux
+    - name: Upload coverage to Codecov
+      if: matrix.os == 'ubuntu-latest'
+      uses: codecov/codecov-action@v3
+      with:
+        verbose: true
+        gcov: true
+        gcov_ignore: ${{github.workspace}}/test

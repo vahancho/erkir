@@ -1,52 +1,63 @@
 cmake_minimum_required(VERSION 3.9)
 
-project(erkir)
-set (CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-add_library(erkir
-    include/cartesianpoint.h
-    include/coordinate.h
-    include/datum.h
-    include/ellipsoidalpoint.h
-    include/point.h
-    include/sphericalpoint.h
-    include/vector3d.h
-    src/cartesianpoint.cpp
-    src/coordinate.cpp
-    src/datum.cpp
-    src/ellipsoidalpoint.cpp
-    src/point.cpp
-    src/sphericalpoint.cpp
-    src/vector3d.cpp
-)
-add_library(erkir::erkir ALIAS erkir)
+# The project definition
+project(erkir VERSION 2.0.0
+        DESCRIPTION "C++ library for geodesic and trigonometric calculations"
+        LANGUAGES CXX)
 
-add_executable(erkir_test
-    test/test.cpp
-)
+# Make cache variables for install destinations
+include(GNUInstallDirs)
 
-target_link_libraries(erkir_test PRIVATE erkir)
+# General options
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+option(ENABLE_TESTING "Enable unit test build" OFF)
 
-# Includes
-target_include_directories(erkir      PUBLIC  include)
-target_include_directories(erkir_test PRIVATE include)
-target_include_directories(erkir_test PRIVATE src)
+if (NOT MSVC)
+    # Specify the target architecture (Linux). For Windows based generator use rather
+    # '-A Win32' or '-A x64 options'
+    set(TARGET_ARCH x86 CACHE STRING "the target architecture")
+    set_property(CACHE TARGET_ARCH PROPERTY STRINGS x86 x64)
 
-enable_testing()
-add_test(NAME Test COMMAND erkir_test)
+    if (TARGET_ARCH STREQUAL "x86")
+        set(CMAKE_C_FLAGS   -m32)
+        set(CMAKE_CXX_FLAGS -m32)
+    elseif(TARGET_ARCH STREQUAL "x64")
+        set(CMAKE_C_FLAGS   -m64)
+        set(CMAKE_CXX_FLAGS -m64)
+    else()
+        message(FATAL_ERROR "Incorrect target architecture specified. "
+                            "It should be either x86 or x64")
+    endif()
 
-# Coverage support.
-option(CODE_COVERAGE "Enable coverage reporting" ON)
-if (CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  # Add required flags (GCC & LLVM/Clang)
-  target_compile_options(erkir INTERFACE
-    -O0        # no optimization
-    -g         # generate debug info
-    --coverage # sets all required flags
-  )
-  if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-    target_link_options(erkir INTERFACE --coverage)
-  else()
-    target_link_libraries(erkir INTERFACE --coverage)
-  endif()
+    # Get the architecture: x86 vs x64
+    if(TARGET_ARCH STREQUAL "x64")
+        set(BIT "x86_64")
+    else()
+        set(BIT "x86")
+    endif()
+
+    add_compile_options(-Wall -Wextra -pedantic -Werror)
+endif()
+
+# Append a postfix for the debug libraries
+if (NOT CMAKE_DEBUG_POSTFIX)
+    set(CMAKE_DEBUG_POSTFIX d)
+endif()
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+add_subdirectory(src)
+
+if (ENABLE_TESTING)
+    enable_testing()
+    include(Dart)
+
+    add_subdirectory(test)
 endif()
