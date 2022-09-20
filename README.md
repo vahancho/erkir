@@ -9,6 +9,7 @@ however I designed the library to be more object oriented. Thus the code is orga
 little bit differently, but the implementation itself is preserved.
 
 [![Latest release](https://img.shields.io/github/v/release/vahancho/erkir?include_prereleases)](https://github.com/vahancho/erkir/releases)
+[![Test (CMake)](https://github.com/vahancho/erkir/actions/workflows/cmake.yml/badge.svg)](https://github.com/vahancho/erkir/actions/workflows/cmake.yml)
 [![codecov](https://codecov.io/gh/vahancho/erkir/branch/master/graph/badge.svg)](https://codecov.io/gh/vahancho/erkir)
 
 ### Prerequisites
@@ -16,13 +17,34 @@ little bit differently, but the implementation itself is preserved.
 There are no special requirements and dependencies except *C++11* compliant compiler.
 The class is tested with *gcc 4.8.4* and *MSVC 15.x* (Visual Studio 2017).
 The library is written with pure STL without any third party dependencies.
-For more details see the CI badges (*Travis CI & AppVeyor CI*) above.
+For more details see the CI badges (*GitHub Actions*) above.
 
 ### Installation
 
 No installation required. Just incorporate header files from the *include/* and
 source files from *src/* directories in your project and compile them. All library
 classes are in *erkir* namespace.
+
+#### Integration with `CMake` projects
+
+However, if you use `CMake` and want to integrate the library into your project
+you might want to install it first by invoking a `CMake` command from the build directory:
+
+```
+cmake --install . --prefix=<install_path> --config=Release
+```
+
+Once the library is installed you can use it from in your project by adjusting its
+`CMake` script. For example:
+
+```
+[..]
+find_package(erkir REQUIRED)
+
+add_executable(example main.cpp)
+target_link_libraries(example erkir)
+[..]
+```
 
 ### The API
 
