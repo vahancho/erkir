@@ -26,12 +26,14 @@ jobs:
     - name: Configure CMake
       if: matrix.os != 'windows-latest'
       working-directory: ${{github.workspace}}
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True
+      run: cmake -B build_x86 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x86
+      run: cmake -B build_x64 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x64
 
     - name: Build
       if: matrix.os != 'windows-latest'
       # Build your program with the given configuration
-      run: cmake --build build --config ${{env.BUILD_TYPE}}
+      run: cmake --build build_x86 --config ${{env.BUILD_TYPE}}
+      run: cmake --build build_x64 --config ${{env.BUILD_TYPE}}
 
     # Windows only
     - name: Configure CMake (Windows)
@@ -40,7 +42,8 @@ jobs:
       shell: cmd
       run: |
         call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
-        cmake -B build -DENABLE_TESTING=True
+        cmake -B build_x86 -DENABLE_TESTING=True -A Win32
+        cmake -B build_x64 -DENABLE_TESTING=True -A x64
 
     # Windows only
     - name: Build (Windows)
@@ -49,14 +52,20 @@ jobs:
       # Build your program with the given configuration
       run: |
         call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
-        cmake --build build --config ${{env.BUILD_TYPE}}
+        cmake --build build_x86 --config ${{env.BUILD_TYPE}}
+        cmake --build build_x64 --config ${{env.BUILD_TYPE}}
 
-    - name: Test
-      working-directory: ${{github.workspace}}/build
+    - name: Test_x86
+      working-directory: ${{github.workspace}}/build_x86
       # Execute tests defined by the CMake configuration.
       run: ctest -C ${{env.BUILD_TYPE}} --verbose
 
-    # Uploade coverage report only for Linux
+    - name: Test_x64
+      working-directory: ${{github.workspace}}/build_x64
+      # Execute tests defined by the CMake configuration.
+      run: ctest -C ${{env.BUILD_TYPE}} --verbose
+
+    # Upload coverage report only for Linux
     - name: Upload coverage to Codecov
       if: matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v3
