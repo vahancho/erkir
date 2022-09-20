@@ -26,14 +26,16 @@ jobs:
     - name: Configure CMake
       if: matrix.os != 'windows-latest'
       working-directory: ${{github.workspace}}
-      run: cmake -B build_x86 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x86
-      run: cmake -B build_x64 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x64
+      run: |
+        cmake -B build_x86 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x86
+        cmake -B build_x64 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x64
 
     - name: Build
       if: matrix.os != 'windows-latest'
       # Build your program with the given configuration
-      run: cmake --build build_x86 --config ${{env.BUILD_TYPE}}
-      run: cmake --build build_x64 --config ${{env.BUILD_TYPE}}
+      run: |
+        cmake --build build_x86 --config ${{env.BUILD_TYPE}}
+        cmake --build build_x64 --config ${{env.BUILD_TYPE}}
 
     # Windows only
     - name: Configure CMake (Windows)
