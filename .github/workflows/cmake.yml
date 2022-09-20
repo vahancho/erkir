@@ -78,5 +78,4 @@ jobs:
       with:
         verbose: true
         gcov: true
-        gcov_ignore: ${{github.workspace}}/test
         gcov_include: ${{github.workspace}}/src/*.cpp ${{github.workspace}}/include/*.h
