@@ -143,7 +143,7 @@ Vector3d Vector3d::rotateAround(const Vector3d &axis, double theta) const
   }
   return Vector3d(qp[0], qp[1], qp[2]);
   // qv en.wikipedia.org/wiki/Rodrigues'_rotation_formula...
-};
+}
 
 } // erkir
 
