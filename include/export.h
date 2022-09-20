@@ -8,7 +8,7 @@
     #   define ERKIR_EXPORT __declspec(dllimport)
     #endif
 #else
-    #define RX_LOG_EXPORT
+    #define ERKIR_EXPORT
 #endif
 
 #endif // __EXPORT_H_
