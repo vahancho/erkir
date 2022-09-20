@@ -15,7 +15,7 @@ include(GNUInstallDirs)
 
 # General options
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
-option(ENABLE_TESTING "Enable unit test build" ON)
+option(ENABLE_TESTING "Enable unit test build" OFF)
 
 if (NOT MSVC)
     # Specify the target architecture (Linux). For Windows based generator use rather

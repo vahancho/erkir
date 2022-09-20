@@ -54,8 +54,7 @@ install(TARGETS  ${TARGET}
 install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Install help files
-install(FILES     ${PROJECT_SOURCE_DIR}/README.md          TYPE DOC)
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../docs/html TYPE DOC OPTIONAL)
+install(FILES ${PROJECT_SOURCE_DIR}/README.md TYPE DOC)
 
 # Install the export
 install(EXPORT ${TARGET}Targets

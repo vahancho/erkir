@@ -40,11 +40,11 @@ int main(int argc, char **argv)
   erkir::spherical::Point p1{ 52.205, 0.119 };
   erkir::spherical::Point p2{ 48.857, 2.351 };
   auto d = p1.distanceTo(p2); // 404.3 km
-  
+
   // Get destination point by given distance (shortest) and bearing from start point.
   erkir::spherical::Point p3{ 51.4778, -0.0015 };
   auto dest = p3.destinationPoint(7794.0, 300.7); // 51.5135°N, 000.0983°W
-  
+
   // Convert a point from one coordinates system to another.
   erkir::ellipsoidal::Point pWGS84(51.4778, -0.0016, ellipsoidal::Datum::Type::WGS84);
   auto pOSGB = pWGS84.toDatum(ellipsoidal::Datum::Type::OSGB36); // 51.4778°N, 000.0000°E
@@ -68,38 +68,24 @@ To run them you have to build and run the test application. For doing that you m
 commands from the terminal, assuming that compiler and environment are already configured:
 
 #### Linux (gcc)
-```
-cd test
-g++ -std=c++11 -Isrc -Iinclude test.cpp -o test
-./test
-```
-
-or using CMake
 
 ```
-mkdir build
-cd build
-cmake ..
-make
-./erkir_test
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=True
+cmake --build .
+ctest
 ```
 
-#### Windows
-```
-cd test
-cl /I..\src /I..\include /W4 /EHsc test.cpp /link /out:test.exe
-test
-```
-
-or using CMake
+#### Windows (MSVC Toolchain)
 
 ```
-mkdir build
-cd build
-cmake .. -G "NMake Makefiles"
-nmake
-erkir_test
+mkdir build && cd build
+cmake .. -DENABLE_TESTING=True -A x64
+cmake --build . --config=Release
+ctest -C Release
 ```
+
+For x86 builds use `-A Win32` option instead.
 
 ### Performance Tests
 
