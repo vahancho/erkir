@@ -26,16 +26,12 @@ jobs:
     - name: Configure CMake
       if: matrix.os != 'windows-latest'
       working-directory: ${{github.workspace}}
-      run: |
-        cmake -B build_x86 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x86
-        cmake -B build_x64 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True -DTARGET_ARCH=x64
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DENABLE_TESTING=True
 
     - name: Build
       if: matrix.os != 'windows-latest'
       # Build your program with the given configuration
-      run: |
-        cmake --build build_x86 --config ${{env.BUILD_TYPE}}
-        cmake --build build_x64 --config ${{env.BUILD_TYPE}}
+      run: cmake --build build --config ${{env.BUILD_TYPE}}
 
     # Windows only
     - name: Configure CMake (Windows)
@@ -57,12 +53,20 @@ jobs:
         cmake --build build_x86 --config ${{env.BUILD_TYPE}}
         cmake --build build_x64 --config ${{env.BUILD_TYPE}}
 
+    - name: Test
+      if: matrix.os != 'windows-latest'
+      working-directory: ${{github.workspace}}/build
+      # Execute tests defined by the CMake configuration.
+      run: ctest -C ${{env.BUILD_TYPE}} --verbose
+
     - name: Test_x86
+      if: matrix.os == 'windows-latest'
       working-directory: ${{github.workspace}}/build_x86
       # Execute tests defined by the CMake configuration.
       run: ctest -C ${{env.BUILD_TYPE}} --verbose
 
     - name: Test_x64
+      if: matrix.os == 'windows-latest'
       working-directory: ${{github.workspace}}/build_x64
       # Execute tests defined by the CMake configuration.
       run: ctest -C ${{env.BUILD_TYPE}} --verbose
