@@ -1,18 +1,17 @@
 set(TARGET erkir)
 
 set(HEADERS
-    ${CMAKE_SOURCE_DIR}/include/cartesianpoint.h
-    ${CMAKE_SOURCE_DIR}/include/coordinate.h
-    ${CMAKE_SOURCE_DIR}/include/datum.h
-    ${CMAKE_SOURCE_DIR}/include/ellipsoidalpoint.h
-    ${CMAKE_SOURCE_DIR}/include/export.h
-    ${CMAKE_SOURCE_DIR}/include/point.h
-    ${CMAKE_SOURCE_DIR}/include/sphericalpoint.h
-    ${CMAKE_SOURCE_DIR}/include/vector3d.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/cartesianpoint.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/coordinate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/datum.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/ellipsoidalpoint.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/export.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/point.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/sphericalpoint.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/vector3d.h
 )
 
-add_library(${TARGET}
-    ${HEADERS}
+set(SOURCES
     cartesianpoint.cpp
     coordinate.cpp
     datum.cpp
@@ -22,6 +21,8 @@ add_library(${TARGET}
     vector3d.cpp
 )
 
+add_library(${TARGET} ${HEADERS} ${SOURCES})
+
 add_library(erkir::erkir ALIAS erkir)
 
 # Append a postfix for the debug version of the library
@@ -30,7 +31,7 @@ set_target_properties(${TARGET} PROPERTIES DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}
 # Specify the include directories for the target
 target_include_directories(${TARGET}
                            PUBLIC
-                           "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
+                           "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 
 if (MSVC)
