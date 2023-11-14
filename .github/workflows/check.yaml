@@ -86,7 +86,7 @@ jobs:
               run: cmake --build ./build --config ${{ matrix.build }}
 
             - name: Docs
-              run: cmake --build ./build --config ${{ matrix.build }} --target docs
+              run: cmake --build ./build --config ${{ matrix.build }} --target erkir_docs
 
             - name: Tests
               run: ctest --verbose --test-dir ./build/tests --build-config ${{ matrix.build }}
