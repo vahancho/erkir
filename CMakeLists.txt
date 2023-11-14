@@ -38,7 +38,10 @@ if(${ERKIR_BUILD_TESTS_COVERAGE})
   get_property(LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
   # cmake-lint: disable=C0103
   foreach(LANG ${LANGUAGES})
-    if(NOT "${CMAKE_${LANG}_COMPILER_ID}" MATCHES "GNU|(Apple)?[Cc]lang|(LLVM)?[Ff]lang")
+    # FIXME(carlocorradini) See https://github.com/bilke/cmake-modules/issues/84
+    #
+    # if(NOT "${CMAKE_${LANG}_COMPILER_ID}" MATCHES "GNU|(Apple)?[Cc]lang|(LLVM)?[Ff]lang")
+    if(NOT "${CMAKE_${LANG}_COMPILER_ID}" MATCHES "GNU")
       message(WARNING "Tests coverage disabled because compiler ${LANG} does not support it")
       set(ERKIR_BUILD_TESTS_COVERAGE
           FALSE
