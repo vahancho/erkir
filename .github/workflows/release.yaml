@@ -1,0 +1,44 @@
+name: release
+
+on:
+    workflow_run:
+        workflows:
+            - check
+        types:
+            - completed
+        branches:
+            - master
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    release:
+        name: Release package on NPM
+        runs-on: ubuntu-latest
+        if: github.event.workflow_run.conclusion == 'success' && startsWith(github.ref_name, 'v')
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Determine if version is prerelease
+              id: prerelease
+              run: |
+                  _prerelease=
+                  if printf "%s\n" "${{ github.ref_name }}" | grep -q -P '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$'; then
+                    _prerelease=false
+                  else
+                    _prerelease=true
+                  fi
+
+                  printf 'value=%s\n' "$_prerelease" >> "$GITHUB_OUTPUT"
+
+            # TODO(carlocorradini) Changelog
+
+            - name: Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  prerelease: ${{ steps.prerelease.outputs.value == 'true' }}

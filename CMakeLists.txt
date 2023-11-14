@@ -1,80 +1,211 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+#
+# Project
+#
+project(
+  erkir
+  VERSION 3.0.0
+  LANGUAGES CXX
+  HOMEPAGE_URL https://github.com/vahancho/erkir
+  DESCRIPTION "C++ library for geodesic and trigonometric calculations"
+)
+
+#
+# Settings
+#
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_CXX_EXTENSIONS FALSE)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-# The project definition
-project(erkir VERSION 2.0.0
-        DESCRIPTION "C++ library for geodesic and trigonometric calculations"
-        LANGUAGES CXX)
+#
+# Options
+#
+include(CMakeDependentOption)
+option(BUILD_SHARED_LIBS "Build shared library" TRUE)
+option(ERKIR_BUILD_DOCS "Build documentation" FALSE)
+option(ERKIR_BUILD_TESTS "Build tests" FALSE)
+cmake_dependent_option(
+  ERKIR_BUILD_TESTS_COVERAGE "Build tests coverage" FALSE "ERKIR_BUILD_TESTS" TRUE
+)
 
-# Make cache variables for install destinations
+#
+# Checks
+#
+if(${ERKIR_BUILD_TESTS_COVERAGE})
+  # Compiler (GNU, Clang and Flang)
+  get_property(LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
+  # cmake-lint: disable=C0103
+  foreach(LANG ${LANGUAGES})
+    if(NOT "${CMAKE_${LANG}_COMPILER_ID}" MATCHES "GNU|(Apple)?[Cc]lang|(LLVM)?[Ff]lang")
+      message(WARNING "Tests coverage disabled because compiler ${LANG} does not support it")
+      set(ERKIR_BUILD_TESTS_COVERAGE
+          FALSE
+          CACHE BOOL "Build tests coverage" FORCE
+      )
+      break()
+    endif()
+  endforeach()
+endif()
+
+#
+# Debug postfix
+#
+if(NOT DEFINED CMAKE_DEBUG_POSTFIX)
+  set(CMAKE_DEBUG_POSTFIX d)
+endif()
+
+#
+# Includes
+#
 include(GNUInstallDirs)
-
-# General options
-option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
-option(ENABLE_TESTING "Enable unit test build" OFF)
-
-if (NOT MSVC)
-    # Specify the target architecture (Linux). For Windows based generator use rather
-    # '-A Win32' or '-A x64 options'
-    set(TARGET_ARCH x86 CACHE STRING "the target architecture")
-    set_property(CACHE TARGET_ARCH PROPERTY STRINGS x86 x64)
-
-    if (TARGET_ARCH STREQUAL "x86")
-        set(CMAKE_C_FLAGS   -m32)
-        set(CMAKE_CXX_FLAGS -m32)
-    elseif(TARGET_ARCH STREQUAL "x64")
-        set(CMAKE_C_FLAGS   -m64)
-        set(CMAKE_CXX_FLAGS -m64)
-    else()
-        message(FATAL_ERROR "Incorrect target architecture specified. "
-                            "It should be either x86 or x64")
-    endif()
-
-    # Get the architecture: x86 vs x64
-    if(TARGET_ARCH STREQUAL "x64")
-        set(BIT "x86_64")
-    else()
-        set(BIT "x86")
-    endif()
-
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+include(GenerateExportHeader)
+include(CMakePackageConfigHelpers)
+if(${ERKIR_BUILD_TESTS})
+  include(CPM)
+  if(${ERKIR_BUILD_TESTS_COVERAGE})
+    # Enable C language
+    enable_language(C)
+    include(CodeCoverage)
+  endif()
 endif()
 
-# Append a postfix for the debug libraries
-if (NOT CMAKE_DEBUG_POSTFIX)
-    set(CMAKE_DEBUG_POSTFIX d)
+#
+# Configuration file
+#
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/config.h @ONLY
+)
+
+#
+# Headers & Sources
+#
+# Headers
+set(ERKIR_HEADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME})
+set(ERKIR_HEADERS
+    ${ERKIR_HEADERS_DIR}/cartesianpoint.h
+    ${ERKIR_HEADERS_DIR}/config.h
+    ${ERKIR_HEADERS_DIR}/coordinate.h
+    ${ERKIR_HEADERS_DIR}/datum.h
+    ${ERKIR_HEADERS_DIR}/ellipsoidalpoint.h
+    ${ERKIR_HEADERS_DIR}/erkir.h
+    ${ERKIR_HEADERS_DIR}/point.h
+    ${ERKIR_HEADERS_DIR}/sphericalpoint.h
+    ${ERKIR_HEADERS_DIR}/vector3d.h
+)
+
+# Sources
+set(ERKIR_SOURCES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(ERKIR_SOURCES
+    ${ERKIR_SOURCES_DIR}/cartesianpoint.cpp
+    ${ERKIR_SOURCES_DIR}/coordinate.cpp
+    ${ERKIR_SOURCES_DIR}/datum.cpp
+    ${ERKIR_SOURCES_DIR}/ellipsoidalpoint.cpp
+    ${ERKIR_SOURCES_DIR}/point.cpp
+    ${ERKIR_SOURCES_DIR}/sphericalpoint.cpp
+    ${ERKIR_SOURCES_DIR}/vector3d.cpp
+)
+
+#
+# Library
+#
+add_library(${PROJECT_NAME} ${ERKIR_SOURCES})
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+# Export header
+generate_export_header(
+  ${PROJECT_NAME} EXPORT_FILE_NAME ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/export.h
+  INCLUDE_GUARD_NAME ${PROJECT_NAME}_EXPORT_H_
+)
+list(APPEND ERKIR_HEADERS ${ERKIR_HEADERS_DIR}/export.h)
+# Include directories
+target_include_directories(
+  ${PROJECT_NAME}
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+# Properties
+set_target_properties(
+  ${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION} DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
+)
+# Compile options
+target_compile_options(
+  ${PROJECT_NAME} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX> $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall
+                          -Wextra -Wpedantic -Werror>
+)
+
+#
+# Configuration
+#
+configure_package_config_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+#
+# Install
+#
+# Directories
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Targets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+# Headers
+install(FILES ${ERKIR_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+# Help
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md TYPE DOC)
+# Export
+install(
+  EXPORT ${PROJECT_NAME}Targets
+  FILE ${PROJECT_NAME}Targets.cmake
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+# Package
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+              ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
+#
+# CPack
+#
+set(CPACK_GENERATOR DEB RPM TXZ TGZ)
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_DESCRIPTION})
+set(CPACK_PACKAGE_FILE_NAME
+    "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}.${CMAKE_SYSTEM_PROCESSOR}"
+)
+set(CPACK_PACKAGE_RPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/_CPack_Packages/Linux/RPM")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Vahan Aghajanyan <vahancho@gmail.com>")
+include(CPack)
+
+#
+# Documentation
+#
+if(${ERKIR_BUILD_DOCS})
+  add_subdirectory(docs)
 endif()
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-if (ENABLE_TESTING)
-    # Coverage support.
-    option(CODE_COVERAGE "Enable coverage reporting" ON)
-    if (CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-        # Add required flags (GCC & LLVM/Clang)
-	    add_compile_options(-O0        # no optimization
-                            -g         # generate debug info
-			                --coverage # sets all required flags
-	    )
-	    if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-	        add_link_options(--coverage)
-	    else()
-	        link_libraries(--coverage)
-	    endif()
-    endif()
-endif()
-
-add_subdirectory(src)
-
-if (ENABLE_TESTING)
-    enable_testing()
-    include(Dart)
-
-    add_subdirectory(test)
+#
+# Tests
+#
+if(${ERKIR_BUILD_TESTS})
+  # Coverage
+  if(${ERKIR_BUILD_TESTS_COVERAGE})
+    append_coverage_compiler_flags_to_target(${PROJECT_NAME})
+  endif()
+  add_subdirectory(tests)
 endif()

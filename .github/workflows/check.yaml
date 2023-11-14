@@ -1,0 +1,102 @@
+name: check
+
+on:
+    push:
+        branches:
+            - master
+        tags:
+            - v*
+    pull_request:
+        branches:
+            - master
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    version:
+        name: Version
+        if: startsWith(github.ref_name, 'v')
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Check Git tag format
+              run: |
+                  _tag="${{ github.ref_name }}"
+                  if ! printf "%s\n" "$_tag" | grep -q -P '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(alpha|beta|rc)\.(0|[1-9][0-9]*))?$'; then
+                    printf '[ERROR]: Git tag (%s) wrong format\n' "$_tag"
+                    exit 1
+                  fi
+
+    code:
+        name: Code
+        needs: version
+        if: always() && (needs.version.result == 'success' || needs.version.result == 'skipped')
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Install Python
+              uses: actions/setup-python@v4
+
+            - name: Install cmakelang
+              run: pip install cmakelang[YAML]
+
+            - name: Check
+              run: |
+                  chmod u+x ./scripts/check.sh
+
+                  ./scripts/check.sh \
+                      --log-level debug
+
+    build:
+        name: Build
+        needs: code
+        if: always() && needs.code.result == 'success'
+        strategy:
+            fail-fast: true
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+                build: [Debug, Release]
+        runs-on: ${{ matrix.os }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Install Doxygen
+              uses: ssciwr/doxygen-install@v1
+
+            - name: Install LCOV
+              uses: hrishikesh-kadam/setup-lcov@v1
+
+            - name: Configure CMake
+              run: cmake -S . -B ./build -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build }} -DBUILD_SHARED_LIBS:BOOL=FALSE -DERKIR_BUILD_DOCS:BOOL=TRUE -DERKIR_BUILD_TESTS:BOOL=TRUE -DERKIR_BUILD_TESTS_COVERAGE:BOOL=TRUE
+
+            - name: Build
+              run: cmake --build ./build --config ${{ matrix.build }}
+
+            - name: Docs
+              run: cmake --build ./build --config ${{ matrix.build }} --target docs
+
+            - name: Tests
+              run: ctest --verbose --test-dir ./build/tests --build-config ${{ matrix.build }}
+
+            - name: Coverage
+              if: matrix.os == 'ubuntu-latest' && matrix.build == 'Debug'
+              run: cmake --build ./build --config ${{ matrix.build }} --target erkir_coverage
+
+            - name: Upload coverage
+              if: matrix.os == 'ubuntu-latest' && matrix.build == 'Debug'
+              uses: codecov/codecov-action@v3
+              with:
+                  files: ./build/erkir_coverage.info
