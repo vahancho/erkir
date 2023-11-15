@@ -36,14 +36,13 @@ cmake_dependent_option(
 if(${ERKIR_BUILD_TESTS_COVERAGE})
   # Compiler (GNU, Clang and Flang)
   get_property(LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
-  # cmake-lint: disable=C0103
-  foreach(LANG ${LANGUAGES})
+  foreach(lang ${LANGUAGES})
     # FIXME(carlocorradini) See https://github.com/bilke/cmake-modules/issues/84
     #
-    # if(NOT "${CMAKE_${LANG}_COMPILER_ID}" MATCHES "GNU|(Apple)?[Cc]lang|(LLVM)?[Ff]lang")
-    if(NOT "${CMAKE_${LANG}_COMPILER_ID}" MATCHES "GNU")
-      message(WARNING "Tests coverage disabled because compiler ${LANG} does not support it")
-      set(ERKIR_BUILD_TESTS_COVERAGE
+    # if(NOT "${CMAKE_${lang}_COMPILER_ID}" MATCHES "GNU|(Apple)?[Cc]lang|(LLVM)?[Ff]lang")
+    if(NOT "${CMAKE_${lang}_COMPILER_ID}" MATCHES "GNU")
+      message(WARNING "Tests coverage disabled because compiler ${lang} does not support it")
+      set(KDIS_BUILD_TESTS_COVERAGE
           FALSE
           CACHE BOOL "Build tests coverage" FORCE
       )
@@ -117,9 +116,10 @@ set(ERKIR_SOURCES
 add_library(${PROJECT_NAME} ${ERKIR_SOURCES})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 # Export header
+string(TOUPPER ${PROJECT_NAME} ERKIR_PROJECT_NAME_UPPER)
 generate_export_header(
   ${PROJECT_NAME} EXPORT_FILE_NAME ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/export.h
-  INCLUDE_GUARD_NAME ${PROJECT_NAME}_EXPORT_H_
+  INCLUDE_GUARD_NAME ${ERKIR_PROJECT_NAME_UPPER}_EXPORT_H_
 )
 list(APPEND ERKIR_HEADERS ${ERKIR_HEADERS_DIR}/export.h)
 # Include directories
