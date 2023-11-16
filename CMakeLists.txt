@@ -42,7 +42,7 @@ if(${ERKIR_BUILD_TESTS_COVERAGE})
     # if(NOT "${CMAKE_${lang}_COMPILER_ID}" MATCHES "GNU|(Apple)?[Cc]lang|(LLVM)?[Ff]lang")
     if(NOT "${CMAKE_${lang}_COMPILER_ID}" MATCHES "GNU")
       message(WARNING "Tests coverage disabled because compiler ${lang} does not support it")
-      set(KDIS_BUILD_TESTS_COVERAGE
+      set(ERKIR_BUILD_TESTS_COVERAGE
           FALSE
           CACHE BOOL "Build tests coverage" FORCE
       )
