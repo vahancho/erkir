@@ -33,6 +33,7 @@
 #include <tuple>
 
 #include "erkir/cartesianpoint.h"
+#include "erkir/config.h"
 
 namespace erkir {
 
@@ -342,7 +343,9 @@ std::tuple<double, double, double> Point::inverse(const Point &point) const {
 }
 
 bool Point::operator==(const Point &other) const {
-  return datum() == other.datum() && erkir::Point::operator==(other);
+  return datum() == other.datum() &&
+         std::abs(height() - other.height()) < ERKIR_EPSILON &&
+         erkir::Point::operator==(other);
 }
 
 bool Point::operator!=(const Point &other) const { return !(*this == other); }

@@ -338,11 +338,17 @@ TEST(EllipsoidalPoint, Datum) {
   EXPECT_TRUE(greenwichOSGB36.isValid());
   // TODO(vahancho) Should be 0°E? Out by c. 10 metres / 0.5"
   // TODO(vahancho) This result corresponds to Chris Veness' tests
-  EXPECT_EQ(erkir::ellipsoidal::Point(51.4773, 0.0001), greenwichOSGB36);
+  // FIXME(vahancho) Height
+  EXPECT_EQ(erkir::ellipsoidal::Point(51.4773, 0.0001, -45.9051,
+                                      erkir::ellipsoidal::Datum::Type::OSGB36),
+            greenwichOSGB36);
   greenwichWGS84 =
       greenwichOSGB36.toDatum(erkir::ellipsoidal::Datum::Type::WGS84);
   EXPECT_TRUE(greenwichWGS84.isValid());
-  EXPECT_EQ(erkir::ellipsoidal::Point(51.478, 0.0001), greenwichWGS84);
+  // FIXME(vahancho) Height
+  EXPECT_EQ(erkir::ellipsoidal::Point(51.478, 0.0001, -571.7054,
+                                      erkir::ellipsoidal::Datum::Type::WGS84),
+            greenwichWGS84);
 }
 
 TEST(EllipsoidalPoint, DatumFromWGS84ToOSGB36) {
@@ -351,7 +357,10 @@ TEST(EllipsoidalPoint, DatumFromWGS84ToOSGB36) {
       pWGS84.toDatum(erkir::ellipsoidal::Datum::Type::OSGB36);
   EXPECT_TRUE(pWGS84.isValid());
   EXPECT_TRUE(pOSGB36.isValid());
-  EXPECT_EQ(erkir::ellipsoidal::Point(52.9996, 1.0018), pOSGB36);
+  // FIXME(vahancho) Height
+  EXPECT_EQ(erkir::ellipsoidal::Point(52.9996, 1.0018, 3.9867,
+                                      erkir::ellipsoidal::Datum::Type::OSGB36),
+            pOSGB36);
   EXPECT_NEAR(3.987, pOSGB36.height(), ERKIR_TESTS_EPSILON);
 }
 
@@ -361,7 +370,10 @@ TEST(EllipsoidalPoint, DatumFromWGS84ToED50) {
       pWGS84.toDatum(erkir::ellipsoidal::Datum::Type::ED50);
   EXPECT_TRUE(pWGS84.isValid());
   EXPECT_TRUE(pED50.isValid());
-  EXPECT_EQ(erkir::ellipsoidal::Point(53.0008, 1.0014), pED50);
+  // FIXME(vahancho) Height
+  EXPECT_EQ(erkir::ellipsoidal::Point(53.0008, 1.0014, 2.7208,
+                                      erkir::ellipsoidal::Datum::Type::ED50),
+            pED50);
   EXPECT_NEAR(2.721, pED50.height(), ERKIR_TESTS_EPSILON);
 }
 
@@ -374,7 +386,8 @@ TEST(CartesianPoint, CartesianPointToEllipsoidalPoint) {
   const std::unique_ptr<erkir::ellipsoidal::Point> p = cp.toGeoPoint();
   EXPECT_TRUE(p->isValid());
   EXPECT_TRUE(cp.isValid());
-  EXPECT_EQ(erkir::ellipsoidal::Point(45.0, 45.0), *p);
+  // FIXME(vahancho) Height
+  EXPECT_EQ(erkir::ellipsoidal::Point(45.0, 45.0, -0.4342), *p);
 }
 
 TEST(CartesianPoint, EllipsoidalPointToCartesianPoint) {
