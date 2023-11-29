@@ -65,7 +65,7 @@ class ERKIR_EXPORT Point : public erkir::Point {
    *
    * @return Datum.
    */
-  Datum datum() const;
+  const Datum &datum() const;
 
   /**
    * @brief Returns height above the ellipsoid.
@@ -171,6 +171,24 @@ class ERKIR_EXPORT Point : public erkir::Point {
    * auto b2 = p1.finalBearingOn(54972.271, 306.86816); // 307.1736°
    */
   double finalBearingOn(double distance, double initialBearing) const;
+
+  /**
+   * @brief Check if this point is equal to @p other.
+   *
+   * @param other Other point.
+   *
+   * @return True if equals, false otherwise.
+   */
+  bool operator==(const Point &other) const;
+
+  /**
+   * @brief Check if this point is different from @p other.
+   *
+   * @param other Other point.
+   *
+   * @return True if not equals, false otherwise.
+   */
+  bool operator!=(const Point &other) const;
 
  private:
   enum class DirectField { Point, FinalBearing };

@@ -42,7 +42,7 @@ Point::Point(const Latitude &latitude, const Longitude &longitude,
              double height, const Datum &datum)
     : erkir::Point(latitude, longitude), m_height(height), m_datum(datum) {}
 
-Datum Point::datum() const { return m_datum; }
+const Datum &Point::datum() const { return m_datum; }
 
 double Point::height() const { return m_height; }
 
@@ -340,6 +340,12 @@ std::tuple<double, double, double> Point::inverse(const Point &point) const {
 
   return std::make_tuple(distance, initialBearing, finalBearing);
 }
+
+bool Point::operator==(const Point &other) const {
+  return datum() == other.datum() && erkir::Point::operator==(other);
+}
+
+bool Point::operator!=(const Point &other) const { return !(*this == other); }
 
 }  // namespace ellipsoidal
 }  // namespace erkir

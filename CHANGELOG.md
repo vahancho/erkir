@@ -9,15 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `erkir::Latitude` operators `==` and `!=`
-- `erkir::Longitude` operators `==` and `!=`
-- `erkir::Vector3d` operators `==` and `!=`
+- Operators `==` and `!=` for `erkir::Latitude`, `erkir::Longitude`, `erkir::Vector3d`, `erkir::cartesian::Point`, and `erkir::ellipsoidal::Point`
+- Function `const erkir::ellipsoidal::Datum &datum() const` in `erkir::cartesian::Point` to retrieve the datum of the point
+- Single include header file, `erkir.h`, exports all library's component
 - Changelog file ([`CHANGELOG.md`](./CHANGELOG.md))
 
 ### Changed
 
 - All includes must be preceded by the word _erkir_: `#include <erkir/FILE.h>`
-- Single include header file, `erkir.h`, exports all library's component
+- Function `datum()` in `erkir::ellipsoidal::Point` returns a const reference (`const erkir::ellipsoidal::Datum &`)
 - Tests implemented with [`GoogleTest`](https://github.com/google/googletest)
 - _CI_ enhancements
 - Overall code and repository structure have been reworked to improve maintainability

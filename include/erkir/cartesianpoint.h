@@ -62,6 +62,13 @@ class ERKIR_EXPORT Point : public Vector3d {
         const ellipsoidal::Datum &datum = {ellipsoidal::Datum::Type::WGS84});
 
   /**
+   * @brief Returns datum.
+   *
+   * @return Datum.
+   */
+  const ellipsoidal::Datum &datum() const;
+
+  /**
    * @brief Converts this (geocentric) cartesian (x/y/z) coordinate to
    * (geodetic) latitude/longitude point(based on the same datum, or WGS84 if
    * unset).
@@ -81,6 +88,24 @@ class ERKIR_EXPORT Point : public Vector3d {
    * @return Point& Converted point.
    */
   Point &toDatum(ellipsoidal::Datum::Type targetDatum);
+
+  /**
+   * @brief Check if this point is equal to @p other.
+   *
+   * @param other Other point.
+   *
+   * @return True if equals, false otherwise.
+   */
+  bool operator==(const Point &other) const;
+
+  /**
+   * @brief Check if this point is different from @p other.
+   *
+   * @param other Other point.
+   *
+   * @return True if not equals, false otherwise.
+   */
+  bool operator!=(const Point &other) const;
 
  private:
   ellipsoidal::Datum m_datum;

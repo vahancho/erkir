@@ -37,6 +37,8 @@ namespace cartesian {
 Point::Point(double x, double y, double z, const ellipsoidal::Datum &datum)
     : Vector3d(x, y, z), m_datum(datum) {}
 
+const ellipsoidal::Datum &Point::datum() const { return m_datum; }
+
 std::unique_ptr<ellipsoidal::Point> Point::toGeoPoint() const {
   const auto &ellips = m_datum.ellipsoid();
   auto a = ellips.m_a;
@@ -92,6 +94,12 @@ Point &Point::toDatum(ellipsoidal::Datum::Type targetDatum) {
   m_datum = {targetDatum};
   return *this;
 }
+
+bool Point::operator==(const Point &other) const {
+  return datum() == other.datum() && Vector3d::operator==(other);
+}
+
+bool Point::operator!=(const Point &other) const { return !(*this == other); }
 
 }  // namespace cartesian
 }  // namespace erkir
