@@ -55,4 +55,9 @@
 #define ERKIR_VERSION_PATCH (@PROJECT_VERSION_PATCH@)
 // clang-format on
 
+/**
+ * @brief Erkir epsilon.
+ */
+#define ERKIR_EPSILON (0.0001)
+
 #endif  // ERKIR_CONFIG_H_

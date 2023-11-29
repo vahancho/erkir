@@ -43,11 +43,7 @@ const Longitude &Point::longitude() const { return m_longitude; }
 bool Point::isValid() const { return m_isValid; }
 
 bool Point::operator==(const Point &other) const {
-  static const double epsilon = 0.0001;
-  return std::abs(latitude().degrees() - other.latitude().degrees()) <
-             epsilon &&
-         std::abs(longitude().degrees() - other.longitude().degrees()) <
-             epsilon;
+  return latitude() == other.latitude() && longitude() == other.longitude();
 }
 
 bool Point::operator!=(const Point &other) const { return !(*this == other); }

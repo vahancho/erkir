@@ -108,6 +108,24 @@ class ERKIR_EXPORT Latitude : public Coordinate {
    * @throw std::out_of_range
    */
   Latitude(double degree);
+
+  /**
+   * @brief Check if this latitude is equal to @p other.
+   *
+   * @param other Other latitude.
+   *
+   * @return True if equals, false otherwise.
+   */
+  bool operator==(const Latitude &other) const;
+
+  /**
+   * @brief Check if this latitude is different from @p other.
+   *
+   * @param other Other latitude.
+   *
+   * @return True if not equals, false otherwise.
+   */
+  bool operator!=(const Latitude &other) const;
 };
 
 /**
@@ -123,6 +141,24 @@ class ERKIR_EXPORT Longitude : public Coordinate {
    * @throw std::out_of_range
    */
   Longitude(double degree);
+
+  /**
+   * @brief Check if this longitude is equal to @p other.
+   *
+   * @param other Other longitude.
+   *
+   * @return True if equals, false otherwise.
+   */
+  bool operator==(const Longitude &other) const;
+
+  /**
+   * @brief Check if this longitude is different from @p other.
+   *
+   * @param other Other longitude.
+   *
+   * @return True if not equals, false otherwise.
+   */
+  bool operator!=(const Longitude &other) const;
 };
 
 }  // namespace erkir

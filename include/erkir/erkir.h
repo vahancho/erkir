@@ -29,6 +29,7 @@
 #define ERKIR_ERKIR_H_
 
 #include "erkir/cartesianpoint.h"
+#include "erkir/config.h"
 #include "erkir/coordinate.h"
 #include "erkir/datum.h"
 #include "erkir/ellipsoidalpoint.h"

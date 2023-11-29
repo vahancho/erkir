@@ -32,6 +32,8 @@
 #include <cmath>
 #include <stdexcept>
 
+#include "erkir/config.h"
+
 constexpr double radiansInDegree = M_PI / 180.0;
 
 namespace erkir {
@@ -62,11 +64,27 @@ Latitude::Latitude(double degree) : Coordinate(degree) {
   }
 }
 
+bool Latitude::operator==(const Latitude& other) const {
+  return std::abs(degrees() - other.degrees()) < ERKIR_EPSILON;
+}
+
+bool Latitude::operator!=(const Latitude& other) const {
+  return !(*this == other);
+}
+
 Longitude::Longitude(double degree) : Coordinate(degree) {
   if (degree > 180.0 || degree < -180.0) {
     throw std::out_of_range(
         "Longitude measurements range from 0° to (+/-)180°.");
   }
+}
+
+bool Longitude::operator==(const Longitude& other) const {
+  return std::abs(degrees() - other.degrees()) < ERKIR_EPSILON;
+}
+
+bool Longitude::operator!=(const Longitude& other) const {
+  return !(*this == other);
 }
 
 }  // namespace erkir
