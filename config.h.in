@@ -25,27 +25,39 @@
 */
 // clang-format on
 
-#include "erkir/point.h"
+#ifndef ERKIR_CONFIG_H_
+#define ERKIR_CONFIG_H_
 
-#include <cmath>
+/**
+ * @brief Erkir name.
+ */
+#define ERKIR_NAME "@PROJECT_NAME@"
 
-namespace erkir {
+/**
+ * @brief Erkir version.
+ */
+#define ERKIR_VERSION "@PROJECT_VERSION@"
 
-Point::Point() : m_latitude(0.0), m_longitude(0.0), m_isValid(false) {}
+// clang-format off
+/**
+ * @brief Erkir version major.
+ */
+#define ERKIR_VERSION_MAJOR (@PROJECT_VERSION_MAJOR@)
 
-Point::Point(const Latitude &latitude, const Longitude &longitude)
-    : m_latitude(latitude), m_longitude(longitude), m_isValid(true) {}
+/**
+ * @brief Erkir version minor.
+ */
+#define ERKIR_VERSION_MINOR (@PROJECT_VERSION_MINOR@)
 
-const Latitude &Point::latitude() const { return m_latitude; }
+/**
+ * @brief Erkir version patch.
+ */
+#define ERKIR_VERSION_PATCH (@PROJECT_VERSION_PATCH@)
+// clang-format on
 
-const Longitude &Point::longitude() const { return m_longitude; }
+/**
+ * @brief Erkir epsilon.
+ */
+#define ERKIR_EPSILON (0.0001)
 
-bool Point::isValid() const { return m_isValid; }
-
-bool Point::operator==(const Point &other) const {
-  return latitude() == other.latitude() && longitude() == other.longitude();
-}
-
-bool Point::operator!=(const Point &other) const { return !(*this == other); }
-
-}  // namespace erkir
+#endif  // ERKIR_CONFIG_H_

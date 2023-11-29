@@ -1,60 +1,56 @@
-/**********************************************************************************
-*  MIT License                                                                    *
-*                                                                                 *
-*  Copyright (c) 2018-2019 Vahan Aghajanyan <vahancho@gmail.com>                  *
-*                                                                                 *
-*  Latitude/longitude spherical geodesy tools         (c) Chris Veness 2002-2018  *
-*  www.movable-type.co.uk/scripts/latlong.html                                    *
-*  www.movable-type.co.uk/scripts/geodesy/docs/module-latlon-spherical.html       *
-*                                                                                 *
-*  Permission is hereby granted, free of charge, to any person obtaining a copy   *
-*  of this software and associated documentation files (the "Software"), to deal  *
-*  in the Software without restriction, including without limitation the rights   *
-*  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell      *
-*  copies of the Software, and to permit persons to whom the Software is          *
-*  furnished to do so, subject to the following conditions:                       *
-*                                                                                 *
-*  The above copyright notice and this permission notice shall be included in all *
-*  copies or substantial portions of the Software.                                *
-*                                                                                 *
-*  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR     *
-*  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,       *
-*  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE    *
-*  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER         *
-*  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  *
-*  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE  *
-*  SOFTWARE.                                                                      *
-***********************************************************************************/
+// clang-format off
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018-2023 Vahan Aghajanyan
+ * Copyright (c) 2002-2018 Chris Veness (Latitude/Longitude spherical geodesy tools | https://www.movable-type.co.uk/scripts/latlong.html)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+*/
+// clang-format on
 
-#include <cmath>
+#include "erkir/sphericalpoint.h"
+
 #include <algorithm>
+#include <cmath>
 
-#include "sphericalpoint.h"
-
-namespace erkir
-{
-
-namespace spherical
-{
+namespace erkir {
+namespace spherical {
 
 /// Normalise angle to -180..+180°
-static double normalizeAngle(double degrees)
-{
-  return fmod(degrees + 540.0, 360.0) - 180.0;
+
+/**
+ * @brief Normalise angle to -180..+180°.
+ *
+ * @param degree Decimal degree.
+ * @return double
+ */
+static double normalizeAngle(double degree) {
+  return std::fmod(degree + 540.0, 360.0) - 180.0;
 }
 
 Point::Point(const Latitude &latitude, const Longitude &longitude)
-  :
-    erkir::Point(latitude, longitude)
-{}
+    : erkir::Point(latitude, longitude) {}
 
-Point::Point()
-  :
-    erkir::Point()
-{}
+Point::Point() : erkir::Point() {}
 
-double Point::distanceTo(const Point &point, double radius) const
-{
+double Point::distanceTo(const Point &point, double radius) const {
   // see mathforum.org/library/drmath/view/51879.html for derivation
 
   auto phi1 = latitude().radians();
@@ -65,15 +61,14 @@ double Point::distanceTo(const Point &point, double radius) const
   auto deltaLambda = lambda2 - lambda1;
 
   auto a = std::sin(deltaPhi / 2.0) * std::sin(deltaPhi / 2.0) +
-           std::cos(phi1) * std::cos(phi2) *
-           std::sin(deltaLambda / 2.0) * std::sin(deltaLambda / 2.0);
+           std::cos(phi1) * std::cos(phi2) * std::sin(deltaLambda / 2.0) *
+               std::sin(deltaLambda / 2.0);
   auto c = 2.0 * std::atan2(std::sqrt(a), std::sqrt(1.0 - a));
 
   return radius * c;
 }
 
-double Point::bearingTo(const Point &point) const
-{
+double Point::bearingTo(const Point &point) const {
   // see mathforum.org/library/drmath/view/55417.html for derivation
 
   auto phi1 = latitude().radians();
@@ -87,14 +82,13 @@ double Point::bearingTo(const Point &point) const
   return fmod(Coordinate::toDegrees(theta) + 360.0, 360.0);
 }
 
-double Point::finalBearingTo(const Point &point) const
-{
-  // Get initial bearing from destination point to this point & reverse it by adding 180°
+double Point::finalBearingTo(const Point &point) const {
+  // Get initial bearing from destination point to this point & reverse it by
+  // adding 180°
   return fmod(point.bearingTo(*this) + 180.0, 360.0);
 }
 
-Point Point::midpointTo(const Point &point) const
-{
+Point Point::midpointTo(const Point &point) const {
   // see mathforum.org/library/drmath/view/51822.html for derivation
 
   auto phi1 = latitude().radians();
@@ -112,11 +106,11 @@ Point Point::midpointTo(const Point &point) const
   auto lambda3 = lambda1 + std::atan2(By, std::cos(phi1) + Bx);
 
   return Point(Coordinate::toDegrees(phi3),
-               normalizeAngle(Coordinate::toDegrees(lambda3))); // normalise to -180..+180°
+               normalizeAngle(Coordinate::toDegrees(
+                   lambda3)));  // normalise to -180..+180°
 }
 
-Point Point::intermediatePointTo(const Point &point, double fraction) const
-{
+Point Point::intermediatePointTo(const Point &point, double fraction) const {
   auto phi1 = latitude().radians();
   auto lambda1 = longitude().radians();
   auto phi2 = point.latitude().radians();
@@ -134,7 +128,8 @@ Point Point::intermediatePointTo(const Point &point, double fraction) const
   auto deltaPhi = phi2 - phi1;
   auto deltaLambda = lambda2 - lambda1;
   auto a = std::sin(deltaPhi / 2.0) * std::sin(deltaPhi / 2.0) +
-           std::cos(phi1) * std::cos(phi2) * std::sin(deltaLambda / 2.0) * std::sin(deltaLambda / 2.0);
+           std::cos(phi1) * std::cos(phi2) * std::sin(deltaLambda / 2.0) *
+               std::sin(deltaLambda / 2.0);
   auto sigma = 2.0 * std::atan2(std::sqrt(a), std::sqrt(1.0 - a));
 
   auto A = std::sin((1.0 - fraction) * sigma) / std::sin(sigma);
@@ -148,14 +143,15 @@ Point Point::intermediatePointTo(const Point &point, double fraction) const
   auto lambda3 = std::atan2(y, x);
 
   return Point(Coordinate::toDegrees(phi3),
-               fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) - 180.0); // normalise lon to -180..+180°
+               fmod(Coordinate::toDegrees(lambda3) + 540.0, 360.0) -
+                   180.0);  // normalise lon to -180..+180°
 }
 
-Point Point::destinationPoint(double distance, double bearing, double radius) const
-{
+Point Point::destinationPoint(double distance, double bearing,
+                              double radius) const {
   // see mathforum.org/library/drmath/view/52049.html for derivation
 
-  auto sigma = distance / radius; // angular distance in radians
+  auto sigma = distance / radius;  // angular distance in radians
   auto theta = Coordinate::toRadians(bearing);
 
   auto phi1 = latitude().radians();
@@ -175,11 +171,12 @@ Point Point::destinationPoint(double distance, double bearing, double radius) co
   auto lambda2 = lambda1 + std::atan2(y, x);
 
   return Point(Coordinate::toDegrees(phi2),
-               normalizeAngle(Coordinate::toDegrees(lambda2))); // normalise to -180..+180°
+               normalizeAngle(Coordinate::toDegrees(
+                   lambda2)));  // normalise to -180..+180°
 }
 
-Point Point::intersection(const Point &p1, double brng1, const Point &p2, double brng2)
-{
+Point Point::intersection(const Point &p1, double brng1, const Point &p2,
+                          double brng2) {
   // see www.edwilliams.org/avform.htm#Intersection
 
   auto phi1 = p1.latitude().radians();
@@ -192,44 +189,62 @@ Point Point::intersection(const Point &p1, double brng1, const Point &p2, double
   auto deltaLambda = lambda2 - lambda1;
 
   // angular distance p1-p2
-  auto sigma12 = 2.0 * std::asin(std::sqrt(std::sin(deltaPhi / 2.0) * std::sin(deltaPhi / 2.0) +
-                                 std::cos(phi1) * std::cos(phi2) * std::sin(deltaLambda / 2.0) * std::sin(deltaLambda / 2.0)));
+  auto sigma12 =
+      2.0 * std::asin(std::sqrt(
+                std::sin(deltaPhi / 2.0) * std::sin(deltaPhi / 2.0) +
+                std::cos(phi1) * std::cos(phi2) * std::sin(deltaLambda / 2.0) *
+                    std::sin(deltaLambda / 2.0)));
   if (sigma12 == 0) {
     return Point();
   }
 
   // initial/final bearings between points
-  auto costhetaa = (std::sin(phi2) - std::sin(phi1)*std::cos(sigma12)) / (std::sin(sigma12) * std::cos(phi1));
-  auto costhetab = (std::sin(phi1) - std::sin(phi2)*std::cos(sigma12)) / (std::sin(sigma12) * std::cos(phi2));
-  auto thetaA = std::acos(std::min(std::max(costhetaa, -1.0), 1.0)); // protect against rounding errors
-  auto thetaB = std::acos(std::min(std::max(costhetab, -1.0), 1.0)); // protect against rounding errors
+  auto costhetaa = (std::sin(phi2) - std::sin(phi1) * std::cos(sigma12)) /
+                   (std::sin(sigma12) * std::cos(phi1));
+  auto costhetab = (std::sin(phi1) - std::sin(phi2) * std::cos(sigma12)) /
+                   (std::sin(sigma12) * std::cos(phi2));
+  auto thetaA = std::acos(std::min(std::max(costhetaa, -1.0),
+                                   1.0));  // protect against rounding errors
+  auto thetaB = std::acos(std::min(std::max(costhetab, -1.0),
+                                   1.0));  // protect against rounding errors
 
-  auto theta12 = std::sin(lambda2 - lambda1) > 0.0 ? thetaA : 2.0 * Coordinate::pi() - thetaA;
-  auto theta21 = std::sin(lambda2 - lambda1) > 0.0 ? 2.0 * Coordinate::pi() - thetaB : thetaB;
+  auto theta12 = std::sin(lambda2 - lambda1) > 0.0
+                     ? thetaA
+                     : 2.0 * Coordinate::pi() - thetaA;
+  auto theta21 = std::sin(lambda2 - lambda1) > 0.0
+                     ? 2.0 * Coordinate::pi() - thetaB
+                     : thetaB;
 
-  auto alpha1 = theta13 - theta12; // angle 2-1-3
-  auto alpha2 = theta21 - theta23; // angle 1-2-3
+  auto alpha1 = theta13 - theta12;  // angle 2-1-3
+  auto alpha2 = theta21 - theta23;  // angle 1-2-3
 
   if (std::sin(alpha1) == 0.0 && std::sin(alpha2) == 0.0) {
-    return Point(); // Infinite intersections
+    return Point();  // Infinite intersections
   }
   if (std::sin(alpha1) * std::sin(alpha2) < 0.0) {
-    return Point(); // Ambiguous intersection
+    return Point();  // Ambiguous intersection
   }
 
-  auto alpha3 = std::acos(-std::cos(alpha1) * std::cos(alpha2) + std::sin(alpha1) * std::sin(alpha2) * std::cos(sigma12));
-  auto sigma13 = std::atan2(std::sin(sigma12) * std::sin(alpha1) * std::sin(alpha2), std::cos(alpha2) + std::cos(alpha1) * std::cos(alpha3));
-  auto phi3 = std::asin(std::sin(phi1) * std::cos(sigma13) + std::cos(phi1) * std::sin(sigma13) * std::cos(theta13));
-  auto deltaLambda13 = std::atan2(std::sin(theta13) * std::sin(sigma13) * std::cos(phi1), std::cos(sigma13) - std::sin(phi1) * std::sin(phi3));
+  auto alpha3 =
+      std::acos(-std::cos(alpha1) * std::cos(alpha2) +
+                std::sin(alpha1) * std::sin(alpha2) * std::cos(sigma12));
+  auto sigma13 =
+      std::atan2(std::sin(sigma12) * std::sin(alpha1) * std::sin(alpha2),
+                 std::cos(alpha2) + std::cos(alpha1) * std::cos(alpha3));
+  auto phi3 = std::asin(std::sin(phi1) * std::cos(sigma13) +
+                        std::cos(phi1) * std::sin(sigma13) * std::cos(theta13));
+  auto deltaLambda13 =
+      std::atan2(std::sin(theta13) * std::sin(sigma13) * std::cos(phi1),
+                 std::cos(sigma13) - std::sin(phi1) * std::sin(phi3));
   auto lambda3 = lambda1 + deltaLambda13;
 
   return Point(Coordinate::toDegrees(phi3),
-               normalizeAngle(Coordinate::toDegrees(lambda3))); // normalise to -180..+180°
+               normalizeAngle(Coordinate::toDegrees(
+                   lambda3)));  // normalise to -180..+180°
 }
 
 double Point::crossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
-                                   double radius) const
-{
+                                   double radius) const {
   auto d13 = pathStart.distanceTo(*this, radius) / radius;
   auto theta13 = Coordinate::toRadians(pathStart.bearingTo(*this));
   auto theta12 = Coordinate::toRadians(pathStart.bearingTo(pathEnd));
@@ -240,8 +255,7 @@ double Point::crossTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
 }
 
 double Point::alongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
-                                   double radius) const
-{
+                                   double radius) const {
   auto d13 = pathStart.distanceTo(*this, radius) / radius;
   auto theta13 = Coordinate::toRadians(pathStart.bearingTo(*this));
   auto theta12 = Coordinate::toRadians(pathStart.bearingTo(pathEnd));
@@ -251,8 +265,7 @@ double Point::alongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
   auto at = std::acos(std::cos(d13) / std::abs(std::cos(xt)));
 
   auto cosTheta = std::cos(theta12 - theta13);
-  if (cosTheta == 0.0)
-  {
+  if (cosTheta == 0.0) {
     return 0.0;
   }
 
@@ -260,8 +273,7 @@ double Point::alongTrackDistanceTo(const Point &pathStart, const Point &pathEnd,
   return cosTheta > 0 ? dist : -dist;
 }
 
-double Point::maxLatitude(double bearing) const
-{
+double Point::maxLatitude(double bearing) const {
   auto theta = Coordinate::toRadians(bearing);
   auto phi = latitude().radians();
   auto phiMax = std::acos(std::abs(std::sin(theta) * std::cos(phi)));
@@ -269,33 +281,35 @@ double Point::maxLatitude(double bearing) const
   return Coordinate::toDegrees(phiMax);
 }
 
-double Point::rhumbDistanceTo(const Point &point, double radius) const
-{
+double Point::rhumbDistanceTo(const Point &point, double radius) const {
   // see www.edwilliams.org/avform.htm#Rhumb
 
   auto phi1 = latitude().radians();
   auto phi2 = point.latitude().radians();
   auto deltaPhi = phi2 - phi1;
-  auto deltaLambda = std::abs(point.longitude().radians() - longitude().radians());
+  auto deltaLambda =
+      std::abs(point.longitude().radians() - longitude().radians());
 
   // If dLon over 180° take shorter rhumb line across the anti-meridian:
   if (deltaLambda > Coordinate::pi()) {
     deltaLambda -= 2.0 * Coordinate::pi();
   }
 
-  // On Mercator projection, longitude distances shrink by latitude; q is the 'stretch factor'
-  // q becomes ill-conditioned along E-W line (0/0); use empirical tolerance to avoid it
+  // On Mercator projection, longitude distances shrink by latitude; q is the
+  // 'stretch factor' q becomes ill-conditioned along E-W line (0/0); use
+  // empirical tolerance to avoid it
   auto deltaPsi = std::log(std::tan(phi2 / 2.0 + Coordinate::pi() / 4.0) /
                            std::tan(phi1 / 2.0 + Coordinate::pi() / 4.0));
   auto q = std::abs(deltaPsi) > 10e-12 ? deltaPhi / deltaPsi : std::cos(phi1);
 
   // Distance is Pythagoras on 'stretched' Mercator projection
-  auto sigma = std::sqrt(deltaPhi * deltaPhi + q * q * deltaLambda * deltaLambda); // angular distance in radians
+  auto sigma = std::sqrt(deltaPhi * deltaPhi +
+                         q * q * deltaLambda *
+                             deltaLambda);  // angular distance in radians
   return sigma * radius;
 }
 
-double Point::rhumbBearingTo(const Point &point) const
-{
+double Point::rhumbBearingTo(const Point &point) const {
   auto phi1 = latitude().radians();
   auto phi2 = point.latitude().radians();
   auto deltaLambda = point.longitude().radians() - longitude().radians();
@@ -315,9 +329,9 @@ double Point::rhumbBearingTo(const Point &point) const
   return Coordinate::wrap360(Coordinate::toDegrees(theta));
 }
 
-Point Point::rhumbDestinationPoint(double distance, double bearing, double radius) const
-{
-  auto sigma = distance / radius; // angular distance in radians
+Point Point::rhumbDestinationPoint(double distance, double bearing,
+                                   double radius) const {
+  auto sigma = distance / radius;  // angular distance in radians
   auto phi1 = latitude().radians();
   auto lambda1 = longitude().radians();
   auto theta = Coordinate::toRadians(bearing);
@@ -339,11 +353,11 @@ Point Point::rhumbDestinationPoint(double distance, double bearing, double radiu
   auto lambda2 = lambda1 + deltaLambda;
 
   return Point(Coordinate::toDegrees(phi2),
-               normalizeAngle(Coordinate::toDegrees(lambda2))); // normalise to -180..+180°
+               normalizeAngle(Coordinate::toDegrees(
+                   lambda2)));  // normalise to -180..+180°
 }
 
-Point Point::rhumbMidpointTo(const Point &point) const
-{
+Point Point::rhumbMidpointTo(const Point &point) const {
   // see mathforum.org/kb/message.jspa?messageID=148837
 
   auto phi1 = latitude().radians();
@@ -351,31 +365,34 @@ Point Point::rhumbMidpointTo(const Point &point) const
   auto phi2 = point.latitude().radians();
   auto lambda2 = point.longitude().radians();
 
-  if (std::abs(lambda2 - lambda1) > Coordinate::pi()) lambda1 += 2 * Coordinate::pi(); // crossing anti-meridian
+  if (std::abs(lambda2 - lambda1) > Coordinate::pi())
+    lambda1 += 2 * Coordinate::pi();  // crossing anti-meridian
 
   auto phi3 = (phi1 + phi2) / 2;
   auto f1 = std::tan(Coordinate::pi() / 4.0 + phi1 / 2.0);
   auto f2 = std::tan(Coordinate::pi() / 4.0 + phi2 / 2.0);
   auto f3 = std::tan(Coordinate::pi() / 4.0 + phi3 / 2.0);
   auto lambda3 = ((lambda2 - lambda1) * std::log(f3) + lambda1 * std::log(f2) -
-                  lambda2 * std::log(f1)) / std::log(f2 / f1);
+                  lambda2 * std::log(f1)) /
+                 std::log(f2 / f1);
 
   if (!std::isfinite(lambda3)) {
-    lambda3 = (lambda1 + lambda2) / 2.0; // parallel of latitude
+    lambda3 = (lambda1 + lambda2) / 2.0;  // parallel of latitude
   }
 
   return Point(Coordinate::toDegrees(phi3),
-               normalizeAngle(Coordinate::toDegrees(lambda3))); // normalise to -180..+180°
+               normalizeAngle(Coordinate::toDegrees(
+                   lambda3)));  // normalise to -180..+180°
 }
 
-double Point::areaOf(const std::vector<Point> &polygon, double radius)
-{
-  // Uses method due to Karney: osgeo-org.1560.x6.nabble.com/Area-of-a-spherical-polygon-td3841625.html;
-  // For each edge of the polygon, tan(E/2) = tan(deltaLambda/2)·(tan(phi1/2) + tan(phi2/2)) / (1 + tan(phi1/2)·tan(phi2/2))
-  // where E is the spherical excess of the trapezium obtained by extending the edge to the equator
+double Point::areaOf(const std::vector<Point> &polygon, double radius) {
+  // Uses method due to Karney:
+  // osgeo-org.1560.x6.nabble.com/Area-of-a-spherical-polygon-td3841625.html;
+  // For each edge of the polygon, tan(E/2) = tan(deltaLambda/2)·(tan(phi1/2) +
+  // tan(phi2/2)) / (1 + tan(phi1/2)·tan(phi2/2)) where E is the spherical
+  // excess of the trapezium obtained by extending the edge to the equator
 
-  if (polygon.size() < 3)
-  {
+  if (polygon.size() < 3) {
     return 0.0;
   }
 
@@ -387,20 +404,23 @@ double Point::areaOf(const std::vector<Point> &polygon, double radius)
     tmpPolygon.emplace_back(polygon[0]);
   }
 
-  auto S = 0.0; // spherical excess in steradians
+  auto S = 0.0;  // spherical excess in steradians
   for (size_t v = 0; v < tmpPolygon.size() - 1; v++) {
     auto phi1 = tmpPolygon[v].latitude().radians();
     auto phi2 = tmpPolygon[v + 1].latitude().radians();
     auto deltaLambda = tmpPolygon[v + 1].longitude().radians() -
                        tmpPolygon[v].longitude().radians();
-    auto E = 2.0 * std::atan2(std::tan(deltaLambda / 2.0) * (std::tan(phi1 / 2.0) + std::tan(phi2 / 2.0)),
-                              1.0 + std::tan(phi1 / 2.0) * std::tan(phi2 / 2.0));
+    auto E =
+        2.0 * std::atan2(std::tan(deltaLambda / 2.0) *
+                             (std::tan(phi1 / 2.0) + std::tan(phi2 / 2.0)),
+                         1.0 + std::tan(phi1 / 2.0) * std::tan(phi2 / 2.0));
     S += E;
   }
 
-  // Whether polygon encloses pole: sum of course deltas around pole is 0° rather than
-  // normal ±360°: blog.element84.com/determining-if-a-spherical-polygon-contains-a-pole.html
-  // TODO: any better test than this?
+  // Whether polygon encloses pole: sum of course deltas around pole is 0°
+  // rather than normal ±360°:
+  // blog.element84.com/determining-if-a-spherical-polygon-contains-a-pole.html
+  // TODO(vahancho) any better test than this?
   auto sigmaDelta = 0.0;
   auto prevBrng = tmpPolygon[0].bearingTo(tmpPolygon[1]);
   for (size_t v = 0; v < tmpPolygon.size() - 1; v++) {
@@ -414,15 +434,14 @@ double Point::areaOf(const std::vector<Point> &polygon, double radius)
   auto initBrng = tmpPolygon[0].bearingTo(tmpPolygon[1]);
   sigmaDelta += normalizeAngle(initBrng - prevBrng);
 
-  // TODO: fix (intermittent) edge crossing pole - eg (85,90), (85,0), (85,-90)
-  if (std::abs(sigmaDelta) < 90.0) { // 0°-ish
+  // TODO(vahancho) fix (intermittent) edge crossing pole - eg (85,90), (85,0),
+  // (85,-90)
+  if (std::abs(sigmaDelta) < 90.0) {  // 0°-ish
     S = std::abs(S) - 2.0 * Coordinate::pi();
   }
 
-  return std::abs(S * radius * radius); // area in units of radius
+  return std::abs(S * radius * radius);  // area in units of radius
 }
 
-} // spherical
-
-} // erkir
-
+}  // namespace spherical
+}  // namespace erkir

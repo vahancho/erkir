@@ -1,0 +1,19 @@
+{
+    "editor.formatOnSave": true,
+    "cmake.configureSettings": {
+        "BUILD_SHARED_LIBS": false,
+        "ERKIR_BUILD_DOCS": true,
+        "ERKIR_BUILD_TESTS": true,
+        "ERKIR_BUILD_TESTS_COVERAGE": true
+    },
+    "files.associations": {
+        ".clang-format": "yaml",
+        ".clang-tidy": "yaml",
+        ".cmake-format": "yaml",
+        "*.cmake.in": "cmake",
+        "cppcheck.cppcheck": "xml",
+        "CPPLINT.cfg": "properties",
+        "Doxyfile.in": "doxyfile",
+        "config.h.in": "cpp",
+    }
+}

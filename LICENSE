@@ -1,9 +1,7 @@
 MIT License
 
-Copyright (c) 2018-2019 Vahan Aghajanyan
-
-Latitude/longitude spherical geodesy tools         (c) Chris Veness 2002-2018
-www.movable-type.co.uk/scripts/latlong.html
+Copyright (c) 2018-2023 Vahan Aghajanyan
+Copyright (c) 2002-2018 Chris Veness (Latitude/Longitude spherical geodesy tools | https://www.movable-type.co.uk/scripts/latlong.html)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

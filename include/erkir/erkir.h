@@ -25,27 +25,16 @@
 */
 // clang-format on
 
+#ifndef ERKIR_ERKIR_H_
+#define ERKIR_ERKIR_H_
+
+#include "erkir/cartesianpoint.h"
+#include "erkir/config.h"
+#include "erkir/coordinate.h"
+#include "erkir/datum.h"
+#include "erkir/ellipsoidalpoint.h"
 #include "erkir/point.h"
+#include "erkir/sphericalpoint.h"
+#include "erkir/vector3d.h"
 
-#include <cmath>
-
-namespace erkir {
-
-Point::Point() : m_latitude(0.0), m_longitude(0.0), m_isValid(false) {}
-
-Point::Point(const Latitude &latitude, const Longitude &longitude)
-    : m_latitude(latitude), m_longitude(longitude), m_isValid(true) {}
-
-const Latitude &Point::latitude() const { return m_latitude; }
-
-const Longitude &Point::longitude() const { return m_longitude; }
-
-bool Point::isValid() const { return m_isValid; }
-
-bool Point::operator==(const Point &other) const {
-  return latitude() == other.latitude() && longitude() == other.longitude();
-}
-
-bool Point::operator!=(const Point &other) const { return !(*this == other); }
-
-}  // namespace erkir
+#endif  // ERKIR_ERKIR_H_
