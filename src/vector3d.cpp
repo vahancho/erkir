@@ -30,6 +30,7 @@
 #include <cmath>
 #include <vector>
 
+#include "erkir/config.h"
 #include "erkir/coordinate.h"
 
 namespace erkir {
@@ -106,6 +107,16 @@ Vector3d Vector3d::rotateAround(const Vector3d &axis, double theta) const {
   }
   return Vector3d(qp[0], qp[1], qp[2]);
   // qv en.wikipedia.org/wiki/Rodrigues'_rotation_formula...
+}
+
+bool Vector3d::operator==(const Vector3d &other) const {
+  return std::abs(x() - other.x()) < ERKIR_EPSILON &&
+         std::abs(y() - other.y()) < ERKIR_EPSILON &&
+         std::abs(z() - other.z()) < ERKIR_EPSILON;
+}
+
+bool Vector3d::operator!=(const Vector3d &other) const {
+  return !(*this == other);
 }
 
 }  // namespace erkir

@@ -125,6 +125,24 @@ class ERKIR_EXPORT Vector3d {
    */
   Vector3d rotateAround(const Vector3d &axis, double theta) const;
 
+  /**
+   * @brief Check if this vector is equal to @p other.
+   *
+   * @param other Other vector.
+   *
+   * @return True if equals, false otherwise.
+   */
+  bool operator==(const Vector3d &other) const;
+
+  /**
+   * @brief Check if this vector is different from @p other.
+   *
+   * @param other Other vector.
+   *
+   * @return True if not equals, false otherwise.
+   */
+  bool operator!=(const Vector3d &other) const;
+
  private:
   double m_x{0.0};
   double m_y{0.0};
