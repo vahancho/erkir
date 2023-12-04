@@ -75,6 +75,8 @@ jobs:
     - name: Upload coverage to Codecov
       if: matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
         verbose: true
         gcov: true
