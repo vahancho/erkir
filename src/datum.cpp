@@ -1,7 +1,7 @@
 /**********************************************************************************
 *  MIT License                                                                    *
 *                                                                                 *
-*  Copyright (c) 2020 Vahan Aghajanyan <vahancho@gmail.com>                       *
+*  Copyright (c) 2020-2024 Vahan Aghajanyan <vahancho@gmail.com>                       *
 *                                                                                 *
 *  Geodesy tools for conversions between (historical) datums                      *
 *  (c) Chris Veness 2005-2019                                                     *
@@ -63,12 +63,12 @@ static const std::unordered_map<Datum::Ellipsoid::Type, Datum::Ellipsoid, EnumHa
   { Datum::Ellipsoid::Type::WGS84,         { 6378137.0,   6356752.314245, 1.0 / 298.257223563 } },
   { Datum::Ellipsoid::Type::Airy1830,      { 6377563.396, 6356256.909,    1.0 / 299.3249646   } },
   { Datum::Ellipsoid::Type::AiryModified,  { 6377340.189, 6356034.448,    1.0 / 299.3249646   } },
-  { Datum::Ellipsoid::Type::Bessel1841,    { 6377397.155, 6356078.962818, 1.0 / 299.1528128   } },
+  { Datum::Ellipsoid::Type::Bessel1841,    { 6377397.155, 6356078.962822, 1.0 / 299.15281285  } },
   { Datum::Ellipsoid::Type::Clarke1866,    { 6378206.4,   6356583.8,      1.0 / 294.978698214 } },
   { Datum::Ellipsoid::Type::Clarke1880IGN, { 6378249.2,   6356515.0,      1.0 / 293.466021294 } },
   { Datum::Ellipsoid::Type::GRS80,         { 6378137.0,   6356752.314140, 1.0 / 298.257222101 } },
-  { Datum::Ellipsoid::Type::Intl1924,      { 6378388.0,   6356911.946,    1.0 / 297.0         } },
-  { Datum::Ellipsoid::Type::WGS72,         { 6378135.0,   6356750.5,      1.0 / 298.26        } },
+  { Datum::Ellipsoid::Type::Intl1924,      { 6378388.0,   6356911.946128, 1.0 / 297.0         } },
+  { Datum::Ellipsoid::Type::WGS72,         { 6378135.0,   6356750.52,     1.0 / 298.26        } },
 };
 
 /// The transform.
