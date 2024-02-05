@@ -27,6 +27,8 @@
 
 #include "export.h"
 
+#include <string>
+
 namespace erkir
 {
 
@@ -34,6 +36,14 @@ namespace erkir
 class ERKIR_EXPORT Coordinate
 {
 public:
+  /// The coordinates human readable format types.
+  enum Format
+  {
+    DMS, ///< Degrees Minutes Seconds (D° M' S")
+    DDM, ///< Decimal Minutes (D° M.M')
+    DD   ///< Decimal Degrees (D.D°)
+  };
+
   //! Constructs a coordinate by the given decimal degrees.
   Coordinate(double degrees);
 
@@ -69,6 +79,28 @@ public:
     \throws std::out_of_range
   */
   Latitude(double degree);
+
+  /// Returns the latitude from the human readable coordinates (formatted).
+  /*!
+    Latitude/Longitude coordinates in three formats: Degrees Minutes Seconds (D° M' S"),
+    Decimal Minutes (D° M.M'), and Decimal Degrees (D.D°). Each of these formats
+    can represent the same geographic location, but expressed differently.
+
+    For example: 45° 46' 52" N 108° 30' 14" W as displayed in Degrees Minutes Seconds (D° M' S").
+    This same location, in displayed Decimal Minutes (D° M.M'), is: 45° 46.8666' N 108° 30.2333' W.
+    In Decimal Degrees (D.D°), this same location is: 45.7811111° N 108.5038888° W
+
+    About Sign and North, South, East West
+    ---------------------------------------------------------------------------
+    Latitude/Longitude is followed by an indication of hemisphere.
+    For example 45° 46' 52" N indicates the Northern Hemisphere (North of the equator.)
+    108° 30' 14" W indicates an area West of the Prime Meridian. When noting this numerically
+    (especially in Decimal Degrees), positive and negative values are sometimes used.
+    A positive value for North and East, a negative value for South and West.
+    Thus, in our example, when noting 45° 46' 52" N 108° 30' 14" W in Decimal Degrees,
+    it may appear as 45.7811111 -108.5038888 when represented numerically.
+  */
+  static Latitude fromString(const std::string &coord);
 };
 
 //! Implements the longitude - the measurement east or west of the prime meridian.
@@ -81,6 +113,28 @@ public:
     \throws std::out_of_range
   */
   Longitude(double degree);
+
+  /// Returns the longitude from the human readable coordinates (formatted).
+  /*!
+    Latitude/Longitude coordinates in three formats: Degrees Minutes Seconds (D° M' S"),
+    Decimal Minutes (D° M.M'), and Decimal Degrees (D.D°). Each of these formats
+    can represent the same geographic location, but expressed differently.
+
+    For example: 45° 46' 52" N 108° 30' 14" W as displayed in Degrees Minutes Seconds (D° M' S").
+    This same location, in displayed Decimal Minutes (D° M.M'), is: 45° 46.8666' N 108° 30.2333' W.
+    In Decimal Degrees (D.D°), this same location is: 45.7811111° N 108.5038888° W
+
+    About Sign and North, South, East West
+    ---------------------------------------------------------------------------
+    Latitude/Longitude is followed by an indication of hemisphere.
+    For example 45° 46' 52" N indicates the Northern Hemisphere (North of the equator.)
+    108° 30' 14" W indicates an area West of the Prime Meridian. When noting this numerically
+    (especially in Decimal Degrees), positive and negative values are sometimes used.
+    A positive value for North and East, a negative value for South and West.
+    Thus, in our example, when noting 45° 46' 52" N 108° 30' 14" W in Decimal Degrees,
+    it may appear as 45.7811111 -108.5038888 when represented numerically.
+ */
+  static Longitude fromString(const std::string &coord);
 };
 
 }

@@ -22,14 +22,15 @@
 *  SOFTWARE.                                                                      *
 ***********************************************************************************/
 
-#include <random>
-#include <chrono>
-#include <iostream>
-
 #include "sphericalpoint.h"
 #include "ellipsoidalpoint.h"
 #include "cartesianpoint.h"
 #include "vector3d.h"
+
+#include <chrono>
+#include <iostream>
+#include <random>
+#include <unordered_map>
 
 using namespace erkir;
 
@@ -48,7 +49,7 @@ static std::string boolToString(bool value)
 
 static bool verifyDouble(double value, double expected, const std::string &location)
 {
-  static const double epsilon = 0.001;
+  static constexpr const double epsilon = 0.001;
   if (std::abs(value - expected) > epsilon) {
     fprintf(stderr, "%s VALUE ERROR: actual=%.3f, expected=%.3f\n",
             location.c_str(), value, expected);
@@ -209,6 +210,123 @@ int main()
   {
     verifyDouble(Coordinate::wrap360(-1.0), 359.0, LOCATION);
     verifyDouble(Coordinate::wrap360(361.0), 1.0, LOCATION);
+  }
+
+  // Coordinates from string
+  {
+      static const std::vector<std::pair<std::string, double>> lonVariants =
+      {
+        { "45.76260"         , 45.7626 },
+        { "-45.76260"        ,-45.7626 },
+        { " 45.76260 "       , 45.7626},
+        { "45.76260°"        , 45.7626 },
+        { "45.76260° W "     ,-45.7626 },
+        { "45 E"             , 45.0000 },
+        { ".76260"           ,  0.7630 },
+
+        { "45° 46.1' "       , 45.7680 },
+        { " 45° 46.1' E "    , 45.7680 },
+        { "45°46.756′E"      , 45.7793 },
+        { "45° 46.756′ E"    , 45.7793 },
+        { "45 46.756 W"      ,-45.7793 },
+        { "45 46 W"          ,-45.7666 },
+        { "45 .756 W"        ,-45.0126 },
+        { "45 59.9999 W"     ,-45.9999 },
+
+        { "45°46′45.36″ "    , 45.7790 },
+        { "45°46′45.36″ E"   , 45.7790 },
+        { "45º46'47.36\" e"  , 45.7790 },
+        { "45º 46' 47.36\" e", 45.7790 },
+        { "45°46’47.36” E"   , 45.7790 },
+        { "45 46 47.36 W"    ,-45.7790 },
+        { "45° 46′ 47.36″ e" , 45.7790 },
+        { "45° 46’ 47.36” w" ,-45.7790 },
+        { "45° 46’ 47” W"    ,-45.7800 },
+        { "45° 46’ .36” w"   ,-45.7670 },
+      };
+
+      static const std::vector<std::pair<std::string, double>> latVariants =
+      {
+        { "45.76260"         , 45.7626 },
+        { "-45.76260"        ,-45.7626 },
+        { " 45.76260 "       , 45.7626},
+        { "45.76260°"        , 45.7626 },
+        { "45.76260° N "     , 45.7626 },
+        { "45"               , 45.0000 },
+        { ".76260 S"         , -0.7630 },
+
+        { "45° 46.1' "       , 45.7680 },
+        { " 45° 46.1' N "    , 45.7680 },
+        { "45°46.756′N"      , 45.7793 },
+        { "45° 46.756′ N"    , 45.7793 },
+        { "45 46.756 S"      ,-45.7793 },
+        { "45 46 S"          ,-45.7666 },
+        { "45 .756 S"        ,-45.0126 },
+        { "45 59.9999 S"     ,-45.9999 },
+
+        { "45°46′45.36″ "    , 45.7790 },
+        { "45°46′45.36″ N"   , 45.7790 },
+        { "45º46'47.36\" S"  ,-45.7790 },
+        { "45º 46' 47.36\" n", 45.7790 },
+        { "45°46’47.36” N"   , 45.7790 },
+        { "45 46 47.36 S"    ,-45.7790 },
+        { "45° 46′ 47.36″ n" , 45.7790 },
+        { "45° 46’ 47.36” s" ,-45.7790 },
+        { "45° 46’ 47” S"    ,-45.7800 },
+        { "45° 46’ .36” s"   ,-45.7670 },
+      };
+
+      for (auto && v : lonVariants) {
+          auto lon = Longitude::fromString(v.first);
+          verifyDouble(lon.degrees(), v.second, LOCATION);
+      }
+
+      for (auto &&v : latVariants) {
+          auto lat = Latitude::fromString(v.first);
+          verifyDouble(lat.degrees(), v.second, LOCATION);
+      }
+
+      /////////////////////////////////////////////////////////////////////////
+
+      static const std::vector<std::string> lonError = {
+        "",
+        "180.1",
+        "180.76260° W ",
+        "45° 60’ .36” w",
+        "180° 46’ .36” w",
+        "45° 46’ 60.36” w"
+      };
+
+      for (auto && v : lonError) {
+        try {
+          Longitude::fromString(v);
+          fprintf(stderr, "%s VALUE ERROR: expected exception\n", LOCATION .c_str());
+          ++s_failed;
+        }
+        catch (const std::exception &) {
+          ++s_passed;
+        }
+      }
+
+      static const std::vector<std::string> latError = {
+        "",
+        "90.1",
+        "90.76260° W ",
+        "45° 60’ .36” w",
+        "90° 46’ .36” w",
+        "45° 46’ 60.36” w"
+      };
+
+      for (auto &&v : latError) {
+        try {
+          Latitude::fromString(v);
+          fprintf(stderr, "%s VALUE ERROR: expected exception\n", LOCATION.c_str());
+          ++s_failed;
+        }
+        catch (const std::exception &) {
+          ++s_passed;
+        }
+      }
   }
 
   //////////////////////////////////////////////////////////////////////////////
