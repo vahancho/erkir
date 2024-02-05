@@ -37,7 +37,17 @@
 namespace erkir
 {
 
-using RxList = std::unordered_map<Coordinate::Format, std::wregex>;
+template <typename T>
+struct FormatHash
+{
+  std::size_t operator()(const T &type) const
+  {
+    return static_cast<std::size_t>(type);
+  }
+};
+
+using RxList = std::unordered_map<Coordinate::Format, std::wregex,
+                                  FormatHash<Coordinate::Format>>;
 
 constexpr double radiansInDegree = M_PI / 180.0;
 
