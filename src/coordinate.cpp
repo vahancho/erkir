@@ -28,6 +28,7 @@
 
 #include <cassert>
 #include <codecvt>
+#include <locale>
 #include <math.h>
 #include <regex>
 #include <stdexcept>
