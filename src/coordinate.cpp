@@ -126,13 +126,13 @@ static double parseRx(const std::string &coord, const RxList &rxList, char hemis
     auto v = parseRx(wcoord, rx.second);
     if (!v.empty()) {
       switch (rx.first) {
-      case Coordinate::DD:
+      case Coordinate::Format::DD:
       {
         assert(v.size() >= 1);
         dd = std::stof(v.at(0));
         break;
       };
-      case Coordinate::DDM:
+      case Coordinate::Format::DDM:
       {
         assert(v.size() >= 2);
         auto d = std::stof(v.at(0));
@@ -140,7 +140,7 @@ static double parseRx(const std::string &coord, const RxList &rxList, char hemis
         dd = d + m / 60.0;
         break;
       }
-      case Coordinate::DMS:
+      case Coordinate::Format::DMS:
       {
         assert(v.size() >= 3);
         auto d = std::stof(v.at(0));
@@ -221,9 +221,9 @@ Latitude Latitude::fromString(const std::string &coord)
 
   static const RxList rxList =
   {
-    { DMS, rxDMS },
-    { DDM, rxDDM },
-    { DD , rxDD  }
+    { Coordinate::Format::DMS, rxDMS },
+    { Coordinate::Format::DDM, rxDDM },
+    { Coordinate::Format::DD , rxDD  }
   };
 
   return { parseRx(coord, rxList, 'S')};
@@ -250,9 +250,9 @@ Longitude Longitude::fromString(const std::string &coord)
 
   static const RxList rxList =
   {
-    { DMS, rxDMS },
-    { DDM, rxDDM },
-    { DD , rxDD  }
+    { Coordinate::Format::DMS, rxDMS },
+    { Coordinate::Format::DDM, rxDDM },
+    { Coordinate::Format::DD , rxDD  }
   };
 
   return { parseRx(coord, rxList, 'W')};

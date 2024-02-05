@@ -37,7 +37,7 @@ class ERKIR_EXPORT Coordinate
 {
 public:
   /// The coordinates human readable format types.
-  enum Format
+  enum class Format
   {
     DMS, ///< Degrees Minutes Seconds (D° M' S")
     DDM, ///< Decimal Minutes (D° M.M')
