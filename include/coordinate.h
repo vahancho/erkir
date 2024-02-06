@@ -47,6 +47,9 @@ public:
   //! Constructs a coordinate by the given decimal degrees.
   Coordinate(double degrees);
 
+  /// Returns string representation of the coordinate in the specified \p format.
+  virtual std::string toString(Format format, int precision) const = 0;
+
   //! Returns this coordinate's value in decimal degrees.
   double degrees() const;
 
@@ -64,6 +67,9 @@ public:
   /// Constrain degrees to range 0..360.0 (e.g. for bearings); -1 => 359, 361 => 1.
   static double wrap360(double degrees);
 
+protected:
+  std::string toBaseString(Format format, int precision) const;
+
 private:
   double m_degrees;
 };
@@ -79,6 +85,8 @@ public:
     \throws std::out_of_range
   */
   Latitude(double degree);
+
+  std::string toString(Format format, int precision = 2) const override;
 
   /// Returns the latitude from the human readable coordinates (formatted).
   /*!
@@ -113,6 +121,8 @@ public:
     \throws std::out_of_range
   */
   Longitude(double degree);
+
+  std::string toString(Format format, int precision = 2) const override;
 
   /// Returns the longitude from the human readable coordinates (formatted).
   /*!

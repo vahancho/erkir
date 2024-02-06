@@ -28,9 +28,11 @@
 
 #include <cassert>
 #include <codecvt>
+#include <iomanip>
 #include <locale>
 #include <math.h>
 #include <regex>
+#include <sstream>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -210,6 +212,50 @@ double Coordinate::wrap360(double degrees)
   return fmod(degrees + 360.0, 360.0);
 }
 
+std::string Coordinate::toBaseString(Format format, int precision) const
+{
+  static const std::string degreeSign{ "°"};
+  static const std::string minSign   { "'" };
+  static const std::string secSign   { "\"" };
+
+  double degrees{};
+  const auto min = std::abs(std::modf(m_degrees, &degrees)) * 60.0;
+
+  std::ostringstream ss;
+  ss.fill('0');
+
+  switch (format) {
+  case Format::DMS:
+  {
+    const auto sec = std::abs((min - int(min))) * 60.0;
+
+    ss << std::setw(2)
+       << std::abs(int(degrees)) << degreeSign << ' '
+       << std::setw(2)
+       << int(min) << minSign << ' '
+       << std::setw(2)
+       << std::setprecision(precision + 2)
+       << sec << secSign;
+    break;
+  }
+  case Format::DDM:
+    ss << std::setw(2)
+       << std::abs(int(degrees)) << degreeSign << ' '
+       << std::setw(2)
+       << std::setprecision(precision + 2)
+       << min << minSign;
+    break;
+  case Format::DD:
+    ss << std::setw(2)
+       << m_degrees << degreeSign;
+    break;
+  default:
+    break;
+  }
+
+  return ss.str();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 Latitude::Latitude(double degree)
@@ -239,6 +285,11 @@ Latitude Latitude::fromString(const std::string &coord)
   return { parseRx(coord, rxList, 'S')};
 }
 
+std::string Latitude::toString(Coordinate::Format format, int precision) const
+{
+  return toBaseString(format, precision) + ' ' + (degrees() < 0 ? 'S' : 'N');
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 Longitude::Longitude(double degree)
@@ -266,6 +317,11 @@ Longitude Longitude::fromString(const std::string &coord)
   };
 
   return { parseRx(coord, rxList, 'W')};
+}
+
+std::string Longitude::toString(Coordinate::Format format, int precision) const
+{
+  return toBaseString(format, precision) + ' ' + (degrees() < 0 ? 'W' : 'E');
 }
 
 } // namespace erkir
