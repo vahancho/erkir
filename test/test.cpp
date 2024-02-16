@@ -491,6 +491,28 @@ int main()
     }
   }
 
+  // Compass Points
+  {
+    verifyString(  "N", Coordinate::compassPoint(1));
+    verifyString(  "N", Coordinate::compassPoint(720));
+    verifyString(  "N", Coordinate::compassPoint(0));
+    verifyString(  "N", Coordinate::compassPoint(-1));
+    verifyString(  "N", Coordinate::compassPoint(359));
+    verifyString(  "S", Coordinate::compassPoint(180));
+    verifyString("NNE", Coordinate::compassPoint(24));
+    verifyString(  "N", Coordinate::compassPoint(24, Coordinate::CompassPrecision::Cardinal));
+    verifyString( "NE", Coordinate::compassPoint(24, Coordinate::CompassPrecision::Intercardinal));
+    verifyString("NNE", Coordinate::compassPoint(24, Coordinate::CompassPrecision::SecondaryIntercardinal));
+    verifyString( "SW", Coordinate::compassPoint(226));
+    verifyString(  "W", Coordinate::compassPoint(226, Coordinate::CompassPrecision::Cardinal));
+    verifyString( "SW", Coordinate::compassPoint(226, Coordinate::CompassPrecision::Intercardinal));
+    verifyString( "SW", Coordinate::compassPoint(226, Coordinate::CompassPrecision::SecondaryIntercardinal));
+    verifyString("WSW", Coordinate::compassPoint(237));
+    verifyString(  "W", Coordinate::compassPoint(237, Coordinate::CompassPrecision::Cardinal));
+    verifyString( "SW", Coordinate::compassPoint(237, Coordinate::CompassPrecision::Intercardinal));
+    verifyString("WSW", Coordinate::compassPoint(237, Coordinate::CompassPrecision::SecondaryIntercardinal));
+  }
+
   //////////////////////////////////////////////////////////////////////////////
 
   // Ellipsoidal points

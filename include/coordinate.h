@@ -44,6 +44,13 @@ public:
     DD   ///< Decimal Degrees (D.D°)
   };
 
+  enum class CompassPrecision
+  {
+    Cardinal,
+    Intercardinal,
+    SecondaryIntercardinal
+  };
+
   //! Constructs a coordinate by the given decimal degrees.
   Coordinate(double degrees);
 
@@ -66,6 +73,19 @@ public:
 
   /// Constrain degrees to range 0..360.0 (e.g. for bearings); -1 => 359, 361 => 1.
   static double wrap360(double degrees);
+
+  /// Returns compass point (to given precision) for supplied bearing.
+  /*!
+    @param   bearing   Bearing in degrees from north.
+    @param   precision Precision (Cardinal, Intercardinal, SecondaryIntercardinal).
+    @returns Compass point for supplied bearing.
+
+    @example
+       const point = Coordinate::compassPoint(24);    // point = 'NNE'
+       const point = Coordinate::compassPoint(24, 1); // point = 'N'
+  */
+  static std::string compassPoint(double bearing,
+                                  CompassPrecision precision = CompassPrecision::SecondaryIntercardinal);
 
 protected:
   std::string toBaseString(Format format, int precision) const;

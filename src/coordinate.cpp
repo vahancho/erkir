@@ -256,6 +256,23 @@ std::string Coordinate::toBaseString(Format format, int precision) const
   return ss.str();
 }
 
+std::string Coordinate::compassPoint(double bearing, CompassPrecision precision)
+{
+  const auto wrappedBearing = wrap360(bearing); // normalize to range 0..360°
+
+  static constexpr const char *cardinals[] = {
+    "N", "NNE", "NE", "ENE",
+    "E", "ESE", "SE", "SSE",
+    "S", "SSW", "SW", "WSW",
+    "W", "WNW", "NW", "NNW"
+  };
+  static constexpr const int ns[] = { 4, 8, 16 };
+
+  const auto p = static_cast<int>(precision);
+  const auto n = ns[p];
+  return cardinals[(int)(std::round(wrappedBearing * n / 360.0)) % n * 16 / n];
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 Latitude::Latitude(double degree)
