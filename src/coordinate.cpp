@@ -247,7 +247,7 @@ std::string Coordinate::toBaseString(Format format, int precision) const
     break;
   case Format::DD:
     ss << std::setw(2)
-       << m_degrees << degreeSign;
+       << std::abs(m_degrees) << degreeSign;
     break;
   default:
     break;
