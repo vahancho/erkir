@@ -44,10 +44,17 @@ public:
     DD   ///< Decimal Degrees (D.D°)
   };
 
+  /// The cardinal points types
   enum class CompassPrecision
   {
+    ///< Main compass directions: north (N), south (S), east (E), west (W)
     Cardinal,
+    ///< Ordinal directions: northeast (NE), southeast (SE), southwest (SW), northwest (NW)
     Intercardinal,
+    /*!< Secondary intercardinal directions: north - northeast(NNE), east - northeast(ENE),
+      east - southeast(ESE), south - southeast(SSE), south - southwest(SSW),
+      west - southwest(WSW), west - northwest(WNW), north - northwest(NNW)
+    */
     SecondaryIntercardinal
   };
 
@@ -76,6 +83,13 @@ public:
 
   /// Returns compass point (to given precision) for supplied bearing.
   /*!
+    16-wind compass rose supported - the eight principal winds and the eight half-winds
+    together form the 16-wind compass rose, with each compass point at a 22.5°
+    angle from its two neighbours. The half-winds are north-northeast (NNE),
+    east-northeast (ENE), east-southeast (ESE), south-southeast (SSE),
+    south-southwest (SSW), west-southwest (WSW), west-northwest (WNW),
+    and north-northwest (NNW).
+
     @param   bearing   Bearing in degrees from north.
     @param   precision Precision (Cardinal, Intercardinal, SecondaryIntercardinal).
     @returns Compass point for supplied bearing.
