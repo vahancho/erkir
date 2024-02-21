@@ -100,6 +100,22 @@ int main(int argc, char **argv)
 }
 ```
 
+#### Conversion from/to strings
+
+Library supports latitude/longitude coordinates conversion
+in three formats: Degrees Minutes Seconds *(D° M' S")*,
+Decimal Minutes *(D° M.M')*, and Decimal Degrees *(D.D°)*.
+
+```cpp
+auto lon = Longitude::fromString("45° 46’ 47.36” W");
+auto lat = Latitude::fromString("45°46′ 45.36″ N");
+```
+
+```cpp
+auto lon = Longitude{45.7790};
+auto lonStr = lon.toString(Coordinate::Format::DMS); // 45° 46′ 45.36″ E
+```
+
 For more usage examples please refer to the unit tests at `/test/test.cpp` file.
 
 ### Building and Testing

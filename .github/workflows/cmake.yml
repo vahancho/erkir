@@ -2,9 +2,19 @@ name: Test (CMake)
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - 'master'
+      - '*'
+    paths-ignore:
+      - .gitignore
+      - README.md
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - 'master'
+      - '*'
+  workflow_dispatch:
+    branches:
+      - '*'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -21,7 +31,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Configure CMake
       if: matrix.os != 'windows-latest'
@@ -74,7 +84,7 @@ jobs:
     # Upload coverage report only for Linux
     - name: Upload coverage to Codecov
       if: matrix.os == 'ubuntu-latest'
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:

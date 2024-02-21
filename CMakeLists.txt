@@ -73,8 +73,8 @@ endif()
 add_subdirectory(src)
 
 if (ENABLE_TESTING)
+    include(CTest)
     enable_testing()
-    include(Dart)
 
     add_subdirectory(test)
 endif()

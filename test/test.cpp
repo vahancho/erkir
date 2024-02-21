@@ -22,14 +22,15 @@
 *  SOFTWARE.                                                                      *
 ***********************************************************************************/
 
-#include <random>
-#include <chrono>
-#include <iostream>
-
 #include "sphericalpoint.h"
 #include "ellipsoidalpoint.h"
 #include "cartesianpoint.h"
 #include "vector3d.h"
+
+#include <chrono>
+#include <iostream>
+#include <random>
+#include <unordered_map>
 
 using namespace erkir;
 
@@ -48,10 +49,22 @@ static std::string boolToString(bool value)
 
 static bool verifyDouble(double value, double expected, const std::string &location)
 {
-  static const double epsilon = 0.001;
+  static constexpr const double epsilon = 0.001;
   if (std::abs(value - expected) > epsilon) {
     fprintf(stderr, "%s VALUE ERROR: actual=%.3f, expected=%.3f\n",
             location.c_str(), value, expected);
+    ++s_failed;
+    return false;
+  }
+  ++s_passed;
+  return true;
+}
+
+static bool verifyString(const std::string &expected, const std::string &actual)
+{
+  if (expected != actual) {
+    fprintf(stderr, "%s VALUE ERROR: expected '%s' but got '%s'\n", LOCATION.c_str(),
+            expected.c_str(), actual.c_str());
     ++s_failed;
     return false;
   }
@@ -209,6 +222,370 @@ int main()
   {
     verifyDouble(Coordinate::wrap360(-1.0), 359.0, LOCATION);
     verifyDouble(Coordinate::wrap360(361.0), 1.0, LOCATION);
+  }
+
+  // Coordinates from string
+  {
+      static const std::vector<std::pair<std::string, double>> lonVariants =
+      {
+        { "45.76260"         , 45.7626 },
+        { "-45.76260"        ,-45.7626 },
+        { " 45.76260 "       , 45.7626},
+        { "45.76260°"        , 45.7626 },
+        { "45.76260° W "     ,-45.7626 },
+        { "45 E"             , 45.0000 },
+        { ".76260"           ,  0.7630 },
+
+        { "45° 46.1' "       , 45.7680 },
+        { " 45° 46.1' E "    , 45.7680 },
+        { "45°46.756′E"      , 45.7793 },
+        { "45° 46.756′ E"    , 45.7793 },
+        { "45 46.756 W"      ,-45.7793 },
+        { "45 46 W"          ,-45.7666 },
+        { "45 .756 W"        ,-45.0126 },
+        { "45 59.9999 W"     ,-45.9999 },
+
+        { "45°46′45.36″ "    , 45.7790 },
+        { "45°46′45.36″ E"   , 45.7790 },
+        { "45º46'47.36\" e"  , 45.7790 },
+        { "45º 46' 47.36\" e", 45.7790 },
+        { "45°46’47.36” E"   , 45.7790 },
+        { "45 46 47.36 W"    ,-45.7790 },
+        { "45° 46′ 47.36″ e" , 45.7790 },
+        { "45° 46’ 47.36” w" ,-45.7790 },
+        { "45° 46’ 47” W"    ,-45.7800 },
+        { "45° 46’ .36” w"   ,-45.7670 },
+      };
+
+      static const std::vector<std::pair<std::string, double>> latVariants =
+      {
+        { "45.76260"         , 45.7626 },
+        { "-45.76260"        ,-45.7626 },
+        { " 45.76260 "       , 45.7626},
+        { "45.76260°"        , 45.7626 },
+        { "45.76260° N "     , 45.7626 },
+        { "45"               , 45.0000 },
+        { ".76260 S"         , -0.7630 },
+
+        { "45° 46.1' "       , 45.7680 },
+        { " 45° 46.1' N "    , 45.7680 },
+        { "45°46.756′N"      , 45.7793 },
+        { "45° 46.756′ N"    , 45.7793 },
+        { "45 46.756 S"      ,-45.7793 },
+        { "45 46 S"          ,-45.7666 },
+        { "45 .756 S"        ,-45.0126 },
+        { "45 59.9999 S"     ,-45.9999 },
+
+        { "45°46′45.36″ "    , 45.7790 },
+        { "45°46′45.36″ N"   , 45.7790 },
+        { "45º46'47.36\" S"  ,-45.7790 },
+        { "45º 46' 47.36\" n", 45.7790 },
+        { "45°46’47.36” N"   , 45.7790 },
+        { "45 46 47.36 S"    ,-45.7790 },
+        { "45° 46′ 47.36″ n" , 45.7790 },
+        { "45° 46’ 47.36” s" ,-45.7790 },
+        { "45° 46’ 47” S"    ,-45.7800 },
+        { "45° 46’ .36” s"   ,-45.7670 },
+      };
+
+      for (auto && v : lonVariants) {
+          auto lon = Longitude::fromString(v.first);
+          verifyDouble(lon.degrees(), v.second, LOCATION);
+      }
+
+      for (auto &&v : latVariants) {
+          auto lat = Latitude::fromString(v.first);
+          verifyDouble(lat.degrees(), v.second, LOCATION);
+      }
+
+      /////////////////////////////////////////////////////////////////////////
+
+      static const std::vector<std::string> lonError = {
+        "",
+        "180.1",
+        "180.76260° W ",
+        "45° 60’ .36” w",
+        "180° 46’ .36” w",
+        "45° 46’ 60.36” w"
+      };
+
+      for (auto && v : lonError) {
+        try {
+          Longitude::fromString(v);
+          fprintf(stderr, "%s VALUE ERROR: expected exception\n", LOCATION .c_str());
+          ++s_failed;
+        }
+        catch (const std::exception &) {
+          ++s_passed;
+        }
+      }
+
+      static const std::vector<std::string> latError = {
+        "",
+        "90.1",
+        "90.76260° W ",
+        "45° 60’ .36” w",
+        "90° 46’ .36” w",
+        "45° 46’ 60.36” w"
+      };
+
+      for (auto &&v : latError) {
+        try {
+          Latitude::fromString(v);
+          fprintf(stderr, "%s VALUE ERROR: expected exception\n", LOCATION.c_str());
+          ++s_failed;
+        }
+        catch (const std::exception &) {
+          ++s_passed;
+        }
+      }
+  }
+
+  // Coordinates to string DMS
+  {
+    static const std::vector<std::pair<std::string, std::string>> lonVariants =
+    {
+      { "45.76260"         , "45° 45' 45.36\" E"},
+      { "-45.76260"        , "45° 45' 45.36\" W" },
+      { " 45.76260 "       , "45° 45' 45.36\" E"},
+      { "45.76260°"        , "45° 45' 45.36\" E" },
+      { "45.76260° W "     , "45° 45' 45.36\" W" },
+      { "45 E"             , "45° 00' 00\" E" },
+      { ".76260"           , "00° 45' 45.36\" E" },
+
+      { "45° 46.1' "       , "45° 46' 06\" E" },
+      { " 45° 46.1' E "    , "45° 46' 06\" E" },
+      { "45°46.756′E"      , "45° 46' 45.36\" E" },
+      { "45° 46.756′ E"    , "45° 46' 45.36\" E" },
+      { "45 46.756 W"      , "45° 46' 45.36\" W" },
+      { "45 46 W"          , "45° 45' 60\" W" },
+      { "45 .756 W"        , "45° 00' 45.36\" W" },
+      { "45 59.9999 W"     , "45° 59' 59.99\" W" },
+
+      { "45°46′45.36″ "    , "45° 46' 45.36\" E" },
+      { "45°46′45.36″ E"   , "45° 46' 45.36\" E" },
+      { "45º46'47.36\" e"  , "45° 46' 47.36\" E" },
+      { "45º 46' 47.36\" e", "45° 46' 47.36\" E" },
+      { "45°46’47.36” E"   , "45° 46' 47.36\" E" },
+      { "45 46 47.36 W"    , "45° 46' 47.36\" W" },
+      { "45° 46′ 47.36″ e" , "45° 46' 47.36\" E" },
+      { "45° 46’ 47.36” w" , "45° 46' 47.36\" W" },
+      { "45° 46’ 47” W"    , "45° 46' 47\" W" },
+      { "45° 46’ .36” w"   , "45° 46' 0.36\" W" },
+    };
+
+    static const std::vector<std::pair<std::string, std::string>> latVariants =
+    {
+      { "45.76260"         , "45° 45' 45.36\" N" },
+      { "-45.76260"        , "45° 45' 45.36\" S" },
+      { " 45.76260 "       , "45° 45' 45.36\" N"},
+      { "45.76260°"        , "45° 45' 45.36\" N" },
+      { "45.76260° N "     , "45° 45' 45.36\" N" },
+      { "45"               , "45° 00' 00\" N"},
+      { ".76260 S"         , "00° 45' 45.36\" S" },
+
+      { "45° 46.1' "       , "45° 46' 06\" N" },
+      { " 45° 46.1' N "    , "45° 46' 06\" N" },
+      { "45°46.756′N"      , "45° 46' 45.36\" N" },
+      { "45° 46.756′ N"    , "45° 46' 45.36\" N" },
+      { "45 46.756 S"      , "45° 46' 45.36\" S" },
+      { "45 46 S"          , "45° 45' 60\" S" },
+      { "45 .756 S"        , "45° 00' 45.36\" S" },
+      { "45 59.9999 S"     , "45° 59' 59.99\" S" },
+
+      { "45°46′45.36″ "    , "45° 46' 45.36\" N" },
+      { "45°46′45.36″ N"   , "45° 46' 45.36\" N" },
+      { "45º46'47.36\" S"  , "45° 46' 47.36\" S" },
+      { "45º 46' 47.36\" n", "45° 46' 47.36\" N" },
+      { "45°46’47.36” N"   , "45° 46' 47.36\" N" },
+      { "45 46 47.36 S"    , "45° 46' 47.36\" S" },
+      { "45° 46′ 47.36″ n" , "45° 46' 47.36\" N" },
+      { "45° 46’ 47.36” s" , "45° 46' 47.36\" S" },
+      { "45° 46’ 47” S"    , "45° 46' 47\" S" },
+      { "45° 46’ .36” s"   , "45° 46' 0.36\" S" },
+    };
+
+    for (auto && v : lonVariants) {
+      const auto lon = Longitude::fromString(v.first);
+      verifyString(v.second, lon.toString(Coordinate::Format::DMS));
+    }
+
+    for (auto && v : latVariants) {
+      const auto lat = Latitude::fromString(v.first);
+      verifyString(v.second, lat.toString(Coordinate::Format::DMS));
+    }
+  }
+
+  // Coordinates to string DDM
+  {
+    static const std::vector<std::pair<std::string, std::string>> lonVariants =
+    {
+      { "45.76260"         , "45° 45.756' E"},
+      { "-45.76260"        , "45° 45.756' W" },
+      { " 45.76260 "       , "45° 45.756' E"},
+      { "45.76260°"        , "45° 45.756' E" },
+      { "45.76260° W "     , "45° 45.756' W" },
+      { "45 E"             , "45° 00' E" },
+      { ".76260"           , "00° 45.756' E" },
+
+      { "45° 46.1' "       , "45° 46.1' E" },
+      { " 45° 46.1' E "    , "45° 46.1' E" },
+      { "45°46.756′E"      , "45° 46.756' E" },
+      { "45° 46.756′ E"    , "45° 46.756' E" },
+      { "45 46.756 W"      , "45° 46.756' W" },
+      { "45 46 W"          , "45° 46' W" },
+      { "45 .756 W"        , "45° 0.756' W" },
+      { "45 59.9999 W"     , "45° 60' W" },
+
+      { "45°46′45.36″ "    , "45° 46.756' E" },
+      { "45°46′45.36″ E"   , "45° 46.756' E" },
+      { "45º46'47.36\" e"  , "45° 46.789' E" },
+      { "45º 46' 47.36\" e", "45° 46.789' E" },
+      { "45°46’47.36” E"   , "45° 46.789' E" },
+      { "45 46 47.36 W"    , "45° 46.789' W" },
+      { "45° 46′ 47.36″ e" , "45° 46.789' E" },
+      { "45° 46’ 47.36” w" , "45° 46.789' W" },
+      { "45° 46’ 47” W"    , "45° 46.783' W" },
+      { "45° 46’ .36” w"   , "45° 46.006' W" },
+    };
+
+    static const std::vector<std::pair<std::string, std::string>> latVariants =
+    {
+      { "45.76260"         , "45° 45.756' N" },
+      { "-45.76260"        , "45° 45.756' S" },
+      { " 45.76260 "       , "45° 45.756' N"},
+      { "45.76260°"        , "45° 45.756' N" },
+      { "45.76260° N "     , "45° 45.756' N" },
+      { "45"               , "45° 00' N" },
+      { ".76260 S"         , "00° 45.756' S" },
+
+      { "45° 46.1' "       , "45° 46.1' N" },
+      { " 45° 46.1' N "    , "45° 46.1' N" },
+      { "45°46.756′N"      , "45° 46.756' N" },
+      { "45° 46.756′ N"    , "45° 46.756' N" },
+      { "45 46.756 S"      , "45° 46.756' S" },
+      { "45 46 S"          , "45° 46' S" },
+      { "45 .756 S"        , "45° 0.756' S" },
+      { "45 59.9999 S"     , "45° 60' S" },
+
+      { "45°46′45.36″ "    , "45° 46.756' N" },
+      { "45°46′45.36″ N"   , "45° 46.756' N" },
+      { "45º46'47.36\" S"  , "45° 46.789' S" },
+      { "45º 46' 47.36\" n", "45° 46.789' N" },
+      { "45°46’47.36” N"   , "45° 46.789' N" },
+      { "45 46 47.36 S"    , "45° 46.789' S" },
+      { "45° 46′ 47.36″ n" , "45° 46.789' N" },
+      { "45° 46’ 47.36” s" , "45° 46.789' S" },
+      { "45° 46’ 47” S"    , "45° 46.783' S" },
+      { "45° 46’ .36” s"   , "45° 46.006' S" },
+    };
+
+    for (auto &&v : lonVariants) {
+      const auto lon = Longitude::fromString(v.first);
+      verifyString(v.second, lon.toString(Coordinate::Format::DDM, 3));
+    }
+
+    for (auto &&v : latVariants) {
+      const auto lat = Latitude::fromString(v.first);
+      verifyString(v.second, lat.toString(Coordinate::Format::DDM, 3));
+    }
+  }
+
+  // Coordinates to string DD
+  {
+    static const std::vector<std::pair<std::string, std::string>> lonVariants =
+    {
+      { "45.76260"         , "45.7626° E" },
+      { "-45.76260"        , "45.7626° W" },
+      { " 45.76260 "       , "45.7626° E" },
+      { "45.76260°"        , "45.7626° E" },
+      { "45.76260° W "     , "45.7626° W" },
+      { "45 E"             , "45° E"      },
+      { ".76260"           , "0.7626° E"  },
+
+      { "45° 46.1' "       , "45.7683° E" },
+      { " 45° 46.1' E "    , "45.7683° E" },
+      { "45°46.756′E"      , "45.7793° E" },
+      { "45° 46.756′ E"    , "45.7793° E" },
+      { "45 46.756 W"      , "45.7793° W" },
+      { "45 46 W"          , "45.7667° W" },
+      { "45 .756 W"        , "45.0126° W" },
+      { "45 59.9999 W"     , "46° W" },
+
+      { "45°46′45.36″ "    , "45.7793° E" },
+      { "45°46′45.36″ E"   , "45.7793° E" },
+      { "45º46'47.36\" e"  , "45.7798° E" },
+      { "45º 46' 47.36\" e", "45.7798° E" },
+      { "45°46’47.36” E"   , "45.7798° E" },
+      { "45 46 47.36 W"    , "45.7798° W" },
+      { "45° 46′ 47.36″ e" , "45.7798° E" },
+      { "45° 46’ 47.36” w" , "45.7798° W" },
+      { "45° 46’ 47” W"    , "45.7797° W" },
+      { "45° 46’ .36” w"   , "45.7668° W" },
+    };
+
+    static const std::vector<std::pair<std::string, std::string>> latVariants =
+    {
+      { "45.76260"         , "45.7626° N" },
+      { "-45.76260"        , "45.7626° S" },
+      { " 45.76260 "       , "45.7626° N" },
+      { "45.76260°"        , "45.7626° N" },
+      { "45.76260° N "     , "45.7626° N" },
+      { "45"               , "45° N"      },
+      { ".76260 S"         , "0.7626° S"  },
+
+      { "45° 46.1' "       , "45.7683° N" },
+      { " 45° 46.1' N "    , "45.7683° N" },
+      { "45°46.756′N"      , "45.7793° N" },
+      { "45° 46.756′ N"    , "45.7793° N" },
+      { "45 46.756 S"      , "45.7793° S" },
+      { "45 46 S"          , "45.7667° S" },
+      { "45 .756 S"        , "45.0126° S" },
+      { "45 59.9999 S"     , "46° S" },
+
+      { "45°46′45.36″ "    , "45.7793° N" },
+      { "45°46′45.36″ N"   , "45.7793° N" },
+      { "45º46'47.36\" S"  , "45.7798° S" },
+      { "45º 46' 47.36\" n", "45.7798° N" },
+      { "45°46’47.36” N"   , "45.7798° N" },
+      { "45 46 47.36 S"    , "45.7798° S" },
+      { "45° 46′ 47.36″ n" , "45.7798° N" },
+      { "45° 46’ 47.36” s" , "45.7798° S" },
+      { "45° 46’ 47” S"    , "45.7797° S" },
+      { "45° 46’ .36” s"   , "45.7668° S" },
+    };
+
+    for (auto &&v : lonVariants) {
+      const auto lon = Longitude::fromString(v.first);
+      verifyString(v.second, lon.toString(Coordinate::Format::DD, 3));
+    }
+
+    for (auto &&v : latVariants) {
+      const auto lat = Latitude::fromString(v.first);
+      verifyString(v.second, lat.toString(Coordinate::Format::DD, 3));
+    }
+  }
+
+  // Compass Points
+  {
+    verifyString(  "N", Coordinate::compassPoint(1));
+    verifyString(  "N", Coordinate::compassPoint(720));
+    verifyString(  "N", Coordinate::compassPoint(0));
+    verifyString(  "N", Coordinate::compassPoint(-1));
+    verifyString(  "N", Coordinate::compassPoint(359));
+    verifyString(  "S", Coordinate::compassPoint(180));
+    verifyString("NNE", Coordinate::compassPoint(24));
+    verifyString(  "N", Coordinate::compassPoint(24, Coordinate::CompassPrecision::Cardinal));
+    verifyString( "NE", Coordinate::compassPoint(24, Coordinate::CompassPrecision::Intercardinal));
+    verifyString("NNE", Coordinate::compassPoint(24, Coordinate::CompassPrecision::SecondaryIntercardinal));
+    verifyString( "SW", Coordinate::compassPoint(226));
+    verifyString(  "W", Coordinate::compassPoint(226, Coordinate::CompassPrecision::Cardinal));
+    verifyString( "SW", Coordinate::compassPoint(226, Coordinate::CompassPrecision::Intercardinal));
+    verifyString( "SW", Coordinate::compassPoint(226, Coordinate::CompassPrecision::SecondaryIntercardinal));
+    verifyString("WSW", Coordinate::compassPoint(237));
+    verifyString(  "W", Coordinate::compassPoint(237, Coordinate::CompassPrecision::Cardinal));
+    verifyString( "SW", Coordinate::compassPoint(237, Coordinate::CompassPrecision::Intercardinal));
+    verifyString("WSW", Coordinate::compassPoint(237, Coordinate::CompassPrecision::SecondaryIntercardinal));
   }
 
   //////////////////////////////////////////////////////////////////////////////

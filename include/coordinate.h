@@ -27,6 +27,8 @@
 
 #include "export.h"
 
+#include <string>
+
 namespace erkir
 {
 
@@ -34,8 +36,33 @@ namespace erkir
 class ERKIR_EXPORT Coordinate
 {
 public:
+  /// The coordinates human readable format types.
+  enum class Format
+  {
+    DMS, ///< Degrees Minutes Seconds (D° M' S")
+    DDM, ///< Decimal Minutes (D° M.M')
+    DD   ///< Decimal Degrees (D.D°)
+  };
+
+  /// The cardinal points types
+  enum class CompassPrecision
+  {
+    ///< Main compass directions: north (N), south (S), east (E), west (W)
+    Cardinal,
+    ///< Ordinal directions: northeast (NE), southeast (SE), southwest (SW), northwest (NW)
+    Intercardinal,
+    /*!< Secondary intercardinal directions: north - northeast(NNE), east - northeast(ENE),
+      east - southeast(ESE), south - southeast(SSE), south - southwest(SSW),
+      west - southwest(WSW), west - northwest(WNW), north - northwest(NNW)
+    */
+    SecondaryIntercardinal
+  };
+
   //! Constructs a coordinate by the given decimal degrees.
   Coordinate(double degrees);
+
+  /// Returns string representation of the coordinate in the specified \p format.
+  virtual std::string toString(Format format, int precision) const = 0;
 
   //! Returns this coordinate's value in decimal degrees.
   double degrees() const;
@@ -54,6 +81,29 @@ public:
   /// Constrain degrees to range 0..360.0 (e.g. for bearings); -1 => 359, 361 => 1.
   static double wrap360(double degrees);
 
+  /// Returns compass point (to given precision) for supplied bearing.
+  /*!
+    16-wind compass rose supported - the eight principal winds and the eight half-winds
+    together form the 16-wind compass rose, with each compass point at a 22.5°
+    angle from its two neighbours. The half-winds are north-northeast (NNE),
+    east-northeast (ENE), east-southeast (ESE), south-southeast (SSE),
+    south-southwest (SSW), west-southwest (WSW), west-northwest (WNW),
+    and north-northwest (NNW).
+
+    @param   bearing   Bearing in degrees from north.
+    @param   precision Precision (Cardinal, Intercardinal, SecondaryIntercardinal).
+    @returns Compass point for supplied bearing.
+
+    @example
+       const point = Coordinate::compassPoint(24);    // point = 'NNE'
+       const point = Coordinate::compassPoint(24, 1); // point = 'N'
+  */
+  static std::string compassPoint(double bearing,
+                                  CompassPrecision precision = CompassPrecision::SecondaryIntercardinal);
+
+protected:
+  std::string toBaseString(Format format, int precision) const;
+
 private:
   double m_degrees;
 };
@@ -69,6 +119,30 @@ public:
     \throws std::out_of_range
   */
   Latitude(double degree);
+
+  std::string toString(Format format, int precision = 2) const override;
+
+  /// Returns the latitude from the human readable coordinates (formatted).
+  /*!
+    Latitude/Longitude coordinates in three formats: Degrees Minutes Seconds (D° M' S"),
+    Decimal Minutes (D° M.M'), and Decimal Degrees (D.D°). Each of these formats
+    can represent the same geographic location, but expressed differently.
+
+    For example: 45° 46' 52" N 108° 30' 14" W as displayed in Degrees Minutes Seconds (D° M' S").
+    This same location, in displayed Decimal Minutes (D° M.M'), is: 45° 46.8666' N 108° 30.2333' W.
+    In Decimal Degrees (D.D°), this same location is: 45.7811111° N 108.5038888° W
+
+    About Sign and North, South, East West
+    ---------------------------------------------------------------------------
+    Latitude/Longitude is followed by an indication of hemisphere.
+    For example 45° 46' 52" N indicates the Northern Hemisphere (North of the equator.)
+    108° 30' 14" W indicates an area West of the Prime Meridian. When noting this numerically
+    (especially in Decimal Degrees), positive and negative values are sometimes used.
+    A positive value for North and East, a negative value for South and West.
+    Thus, in our example, when noting 45° 46' 52" N 108° 30' 14" W in Decimal Degrees,
+    it may appear as 45.7811111 -108.5038888 when represented numerically.
+  */
+  static Latitude fromString(const std::string &coord);
 };
 
 //! Implements the longitude - the measurement east or west of the prime meridian.
@@ -81,6 +155,30 @@ public:
     \throws std::out_of_range
   */
   Longitude(double degree);
+
+  std::string toString(Format format, int precision = 2) const override;
+
+  /// Returns the longitude from the human readable coordinates (formatted).
+  /*!
+    Latitude/Longitude coordinates in three formats: Degrees Minutes Seconds (D° M' S"),
+    Decimal Minutes (D° M.M'), and Decimal Degrees (D.D°). Each of these formats
+    can represent the same geographic location, but expressed differently.
+
+    For example: 45° 46' 52" N 108° 30' 14" W as displayed in Degrees Minutes Seconds (D° M' S").
+    This same location, in displayed Decimal Minutes (D° M.M'), is: 45° 46.8666' N 108° 30.2333' W.
+    In Decimal Degrees (D.D°), this same location is: 45.7811111° N 108.5038888° W
+
+    About Sign and North, South, East West
+    ---------------------------------------------------------------------------
+    Latitude/Longitude is followed by an indication of hemisphere.
+    For example 45° 46' 52" N indicates the Northern Hemisphere (North of the equator.)
+    108° 30' 14" W indicates an area West of the Prime Meridian. When noting this numerically
+    (especially in Decimal Degrees), positive and negative values are sometimes used.
+    A positive value for North and East, a negative value for South and West.
+    Thus, in our example, when noting 45° 46' 52" N 108° 30' 14" W in Decimal Degrees,
+    it may appear as 45.7811111 -108.5038888 when represented numerically.
+ */
+  static Longitude fromString(const std::string &coord);
 };
 
 }
