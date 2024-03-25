@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # The project definition
-project(erkir VERSION 2.0.1
+project(erkir VERSION 2.1.1
         DESCRIPTION "C++ library for geodesic and trigonometric calculations"
         LANGUAGES CXX)
 
