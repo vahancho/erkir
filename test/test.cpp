@@ -211,6 +211,12 @@ int main()
     auto pMid = p1.rhumbMidpointTo(p2); // 51.0455°N, 001.5957°E
     verifyPoint(pMid, { 51.0455, 001.5957 }, LOCATION);
   }
+  {
+    spherical::Point p1{ 57.124907085007038, 11.000396816127818 };
+    spherical::Point p2{ 57.124907085007429, 11.166426363946812 };
+    auto pMid = p1.rhumbMidpointTo(p2); // 57°07'29"N 11°05'00"E
+    verifyPoint(pMid, { 57.124907085007234, 11.083411590037315 }, LOCATION);
+  }
 
   // Area
   {

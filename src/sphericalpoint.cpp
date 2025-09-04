@@ -344,28 +344,40 @@ Point Point::rhumbDestinationPoint(double distance, double bearing, double radiu
 
 Point Point::rhumbMidpointTo(const Point &point) const
 {
-  // see mathforum.org/kb/message.jspa?messageID=148837
-
-  auto phi1 = latitude().radians();
+  const auto phi1 = latitude().radians();
   auto lambda1 = longitude().radians();
-  auto phi2 = point.latitude().radians();
+  const auto phi2 = point.latitude().radians();
   auto lambda2 = point.longitude().radians();
 
-  if (std::abs(lambda2 - lambda1) > Coordinate::pi()) lambda1 += 2 * Coordinate::pi(); // crossing anti-meridian
-
-  auto phi3 = (phi1 + phi2) / 2;
-  auto f1 = std::tan(Coordinate::pi() / 4.0 + phi1 / 2.0);
-  auto f2 = std::tan(Coordinate::pi() / 4.0 + phi2 / 2.0);
-  auto f3 = std::tan(Coordinate::pi() / 4.0 + phi3 / 2.0);
-  auto lambda3 = ((lambda2 - lambda1) * std::log(f3) + lambda1 * std::log(f2) -
-                  lambda2 * std::log(f1)) / std::log(f2 / f1);
-
-  if (!std::isfinite(lambda3)) {
-    lambda3 = (lambda1 + lambda2) / 2.0; // parallel of latitude
+  // Handle anti-meridian crossing
+  const auto deltaLambda = lambda2 - lambda1;
+  if (std::abs(deltaLambda) > Coordinate::pi()) {
+    if (deltaLambda > 0.0) {
+      lambda1 += 2.0 * Coordinate::pi();
+    } else {
+      lambda2 += 2.0 * Coordinate::pi();
+    }
   }
 
-  return Point(Coordinate::toDegrees(phi3),
-               normalizeAngle(Coordinate::toDegrees(lambda3))); // normalise to -180..+180°
+  // Midpoint latitude
+  const auto phi3 = (phi1 + phi2) / 2.0;
+
+  // Mercator projection factors
+  const auto f1 = std::tan(Coordinate::pi() / 4.0 + phi1 / 2.0);
+  const auto f2 = std::tan(Coordinate::pi() / 4.0 + phi2 / 2.0);
+  const auto f3 = std::tan(Coordinate::pi() / 4.0 + phi3 / 2.0);
+
+  // Compute lambda3 safely
+  double lambda3;
+  const double denominator = std::log(f2 / f1);
+  if (std::abs(denominator) > 1e-12) {
+    lambda3 = ((lambda2 - lambda1) * std::log(f3) + lambda1 * std::log(f2) - lambda2 * std::log(f1)) / denominator;
+  } else {
+    lambda3 = (lambda1 + lambda2) / 2.0; // fallback for parallel latitude
+  }
+
+  // Normalize longitude to [-180, 180]
+  return Point(Coordinate::toDegrees(phi3), normalizeAngle(Coordinate::toDegrees(lambda3)));
 }
 
 double Point::areaOf(const std::vector<Point> &polygon, double radius)
