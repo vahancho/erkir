@@ -59,6 +59,7 @@ install(FILES ${PROJECT_SOURCE_DIR}/README.md TYPE DOC)
 
 # Install the export
 install(EXPORT ${TARGET}Targets
+        NAMESPACE erkir::
         FILE ${TARGET}Targets.cmake
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${TARGET}
 )
