@@ -20,7 +20,16 @@ option(ENABLE_TESTING "Enable unit test build" OFF)
 if (NOT MSVC)
     # Specify the target architecture (Linux). For Windows based generator use rather
     # '-A Win32' or '-A x64 options'
-    set(TARGET_ARCH x86 CACHE STRING "the target architecture")
+
+    if(NOT DEFINED TARGET_ARCH)
+        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+            set(TARGET_ARCH x64)
+        else()
+            set(TARGET_ARCH x86)
+        endif()
+    endif()
+
+    set(TARGET_ARCH ${TARGET_ARCH} CACHE STRING "the target architecture")
     set_property(CACHE TARGET_ARCH PROPERTY STRINGS x86 x64)
 
     if (TARGET_ARCH STREQUAL "x86")
